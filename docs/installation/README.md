@@ -1,6 +1,6 @@
 # Installation and verification
 
-> **Release status: not available.** SpyMonk Redact is under development: the detection engine and the browser playground exist in source form, and the command-line interface does not exist yet. There is no published CLI, browser playground, Python package, standalone archive, container image, release signature, checksum, or verification artifact to install today.
+> **Release status: not available.** SpyMonk Redact is under development: the detection engine, the command-line tool, the Python wheel definition, and the browser playground exist in source form. There is no published CLI, browser playground, Python package, standalone archive, container image, release signature, checksum, or verification artifact to install today.
 
 Do not run `pip install spymonk-redact`, copy commands from older design documents, or rely on an identically named third-party package. The public package and registry identities have not yet been reserved or verified.
 
@@ -44,7 +44,8 @@ When real artifacts are available, use this checklist:
 The engine and the browser playground build from source. You need the Rust toolchain pinned in `rust-toolchain.toml` (it installs automatically through `rustup`), `wasm-bindgen-cli` 0.2.129 (`cargo install wasm-bindgen-cli --version 0.2.129 --locked`), and Node.js 22.13 or later.
 
 ```sh
-cargo test --workspace --locked                 # engine, rule compiler, WebAssembly adapter
+cargo test --workspace --locked                 # engine, rule compiler, WebAssembly adapter, CLI
+cargo build --release --locked -p spymonk-redact # the CLI: target/release/spymonk-redact
 cd web
 npm ci                                          # install scripts are disabled by web/.npmrc
 npm run build                                   # engine to WebAssembly, type checks, bundle, bundle verification

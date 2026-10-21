@@ -6,7 +6,7 @@
 
 SpyMonk Redact is a local-first redaction engine for the moment between debugging and sharing. It removes likely secrets and personal identifiers from logs, stack traces, configuration fragments, terminal output, and API diagnostics while retaining the surrounding context that makes those artifacts useful.
 
-> **Status — engine and browser playground implemented; not released.** The Rust rule compiler, the streaming detection engine, the WebAssembly adapter, and the browser playground are implemented in this repository, and their test suites pass. The command-line interface, installable packages, and a hosted site do not exist yet, and nothing has been published. See [development status](#development-status) for the remaining release gates.
+> **Status — implemented, not released.** The detection engine, the `spymonk-redact` command-line tool, the WebAssembly adapter, the browser playground, the Python wheel, and the release workflows are implemented in this repository, and their test suites pass. Nothing has been published: no package, archive, image, or hosted site exists yet. See [development status](#development-status) for the remaining release gates.
 
 [Product requirements](docs/PRD.md) · [Technical design](docs/TRD.md) · [Rule reference](docs/rules.md) · [Development plans](docs/plans/) · [Installation status](docs/installation/README.md)
 
@@ -34,6 +34,20 @@ The current rule manifest defines nine detector families:
 
 Rules are compiled from [`rules/rules.v1.json`](rules/rules.v1.json) into the core build. The generated [rule reference](docs/rules.md) documents the exact supported formats, placeholders, examples, and exclusions.
 
+## Using the command-line tool
+
+Build it from source (below) until a release is published.
+
+```sh
+spymonk-redact app.log > app.redacted.log          # file to standard output
+kubectl logs pod/api | spymonk-redact --report     # pipe, with a summary on stderr
+spymonk-redact --output clean.log app.log          # atomic file output; stdout stays empty
+spymonk-redact --report-format json app.log        # machine-readable report on stderr
+spymonk-redact --list-rules                        # the rule catalog
+```
+
+Output is byte-exact except for redacted values, in the input's own encoding. On a terminal, hidden and control characters are shown as `<U+XXXX>` markers so escape sequences cannot act on the terminal. Exit codes: 0 success, 1 failure, 2 usage error, 130 or 143 interrupted, 141 broken pipe. To process many files, run one process per file, for example `find logs -name '*.log' -print0 | xargs -0 -P 8 -I{} spymonk-redact -o {}.redacted {}`.
+
 ## Current implementation
 
 The workspace contains a `no_std` + `alloc` Rust engine designed for deterministic, bounded streaming processing. It includes:
@@ -45,6 +59,8 @@ The workspace contains a `no_std` + `alloc` Rust engine designed for determinist
 - per-rule summaries and hidden-character census data;
 - synthetic golden fixtures, property tests for invariants P-1 to P-6, linear-time adversarial tests, and fuzz targets with invariant checks;
 - generated Rust rule tables and Markdown rule documentation.
+
+The command-line tool (`crates/cli`) streams input in 64 KiB chunks, writes `--output` files atomically (create-new, private, synced, renamed; never the input file under any spelling), and hardens itself before reading input: no core dumps, a seccomp filter that denies network and process-creation syscalls on Linux, and process mitigation policies on Windows. Its reports validate against [`schemas/report.v1.schema.json`](schemas/report.v1.schema.json) and never contain input content or paths.
 
 A WebAssembly adapter (`crates/wasm`) runs the same engine in the browser. It zeroes its input and output buffers after each job and caps its memory at 512 MiB.
 
@@ -59,9 +75,10 @@ The browser playground (`web/`) sanitizes pasted text and local files entirely o
 | Golden fixtures, adversarial cases, generated rule docs | Implemented |
 | Property invariants P-1 to P-6, including P-4 (idempotence) | Covered by passing tests |
 | Fuzzing | Targets implemented; runs in CI on Linux. The 24 CPU-hours per target required for release have not yet accumulated |
-| M2 command-line interface | Not started |
+| M2 command-line interface and packaging | Implemented: CLI, reports and schema, hardening, Python wheel and launcher, archive and image definitions. Tests pass on Windows locally and run on Linux, macOS, and Windows in CI |
 | M3 browser/WebAssembly playground | Implemented; automated tests pass in Chromium, Firefox, and WebKit. Manual screen-reader and real-Safari checks are pending |
-| M4–M5 release evidence and packaging | Not started |
+| M4 evidence | Evidence register, compliance self-assessments, privacy notice, and threat-model re-review in [`docs/compliance`](docs/compliance/README.md); reference-machine performance runs pending |
+| M5 release preparation | Release workflow (signed tags, attestations, rebuild comparison, protected publishing) implemented; owner setup in the [release runbook](docs/release.md) |
 
 The project intentionally does not claim release readiness until all engine properties and release gates pass.
 
@@ -81,7 +98,15 @@ cargo clippy --workspace --all-targets --locked -- -D warnings
 cargo test --workspace --locked
 ```
 
-The test suites cover codecs, framing, detectors, fixtures, properties, adversarial inputs, generated-rule documentation, and the WebAssembly adapter, under `crates/*/tests/`.
+The test suites cover codecs, framing, detectors, fixtures, properties, adversarial inputs, generated-rule documentation, the WebAssembly adapter, and the CLI (I/O, atomic output, reports, rendering, signals, and parity with the browser paths), under `crates/*/tests/`. The binary is `target/debug/spymonk-redact`, or `target/release/spymonk-redact` after `cargo build --release -p spymonk-redact`.
+
+### Python wheel
+
+```sh
+python -m pip install --require-hashes -r python/build-requirements.txt   # pinned maturin
+cd python && maturin build --release --locked --out ../wheels
+pip install ../wheels/*.whl     # provides spymonk-redact and python -m spymonk_redact
+```
 
 ### Browser playground
 
@@ -111,10 +136,14 @@ cargo install cargo-fuzz --version 0.12.0 --locked
 ```text
 crates/core/       Streaming redaction engine
 crates/rules/      Manifest validation and rule/documentation generator
+crates/cli/        The spymonk-redact command-line tool
 crates/wasm/       WebAssembly adapter for the browser
+python/            Wheel definition and the python -m launcher
+packaging/         Container image definition
+tools/             Release checks and reproducible packaging
 web/               Browser playground (TypeScript and Vite)
 rules/             Versioned rule manifest and schema
-schemas/           JSON schemas for fixtures
+schemas/           JSON schemas for reports and fixtures
 fixtures/          Synthetic positive, negative, overlap, encoding, and benign fixtures
 fuzz/              libFuzzer targets
 docs/              Product requirements, technical design, rules, and plans
@@ -131,6 +160,10 @@ assets/            Project artwork
 | [Rule reference](docs/rules.md) | Generated detector catalogue and rule details. |
 | [M0/M1 implementation plan](docs/plans/2026-10-21-m0-m1-foundations-and-engine.md) | Foundation and engine delivery checklist. |
 | [M3 implementation plan](docs/plans/2026-10-21-m3-web.md) | Browser playground delivery checklist. |
+| [M2–M5 implementation plan](docs/plans/2026-10-22-m2-m5-cli-packaging-release.md) | CLI, packaging, evidence, and release checklist. |
+| [Compliance](docs/compliance/README.md) | Self-assessments, evidence register, and threat-model re-review. |
+| [Privacy notice](docs/privacy.md) | What the website and the tool do and do not do with your data. |
+| [Release runbook](docs/release.md) | Owner setup and the steps of each release. |
 | [Installation status](docs/installation/README.md) | Publication and verification status, and building from source. |
 
 ## Contributing

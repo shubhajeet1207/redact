@@ -1,0 +1,131 @@
+# Evidence register (TRD §17, §21.2). Each release gate and control links to the evidence that
+# shows it: a workflow job, a test, a document, or a repository setting. Status values:
+#   met      — the evidence exists and passes today
+#   partial  — evidence exists but does not yet cover the whole gate
+#   pending  — the mechanism exists but has not produced its evidence yet (for example, it runs
+#              only on a release tag or needs accumulated CI time)
+#   owner    — needs an owner action or account setting outside the repository
+# Updated: 2026-10-22, before the first release. Nothing here claims a published artifact.
+
+schema: 1
+release_gates:
+  - id: G1
+    gate: Every PRD v1.1 acceptance criterion has recorded passing evidence
+    status: partial
+    evidence:
+      - TRD §22.2 traceability table
+      - crates/*/tests, web/tests, web/e2e
+    gap: The per-criterion evidence table is filled in at release time from the CI run of the tag.
+  - id: G2
+    gate: No open defect that leaks a supported secret, copies raw or stale input, transmits content, writes a partial file as complete, or differs between surfaces
+    status: met
+    evidence:
+      - crates/core/tests/properties.rs (canaries_never_survive, P-1 to P-6)
+      - crates/cli/tests/output.rs (atomic output, no partial files)
+      - crates/cli/tests/parity.rs (CLI, sanitize_bytes, file mode, paste mode)
+      - web/e2e/app.spec.ts (stale results, Copy, network absence)
+      - GitHub issues with the security label (none open)
+  - id: G3
+    gate: Corpus gates and properties P-1 to P-6 pass
+    status: met
+    evidence:
+      - .github/workflows/ci.yml job test (Linux, macOS, Windows; debug and release)
+      - crates/core/tests/fixtures.rs, crates/core/tests/properties.rs
+  - id: G4
+    gate: Fuzzing meets TRD §19.4 (24 clean CPU-hours per target)
+    status: pending
+    evidence:
+      - .github/workflows/fuzz.yml (pull requests 120 s per target; nightly 30 min per target)
+      - fuzz/fuzz_targets/{sanitize_bytes,stream_split,codec,framer,manifest_validator}.rs
+    gap: Accumulated CPU-hours are recorded from nightly runs; report_json joins when the report fuzz target is added.
+  - id: G5
+    gate: Performance and memory gates on the reference machine
+    status: partial
+    evidence:
+      - crates/core/examples/throughput.rs (development machine: benign 115 MiB/s, dense 55 MiB/s, adversarial linear)
+      - crates/core/tests/adversarial.rs (linear-growth gate in CI)
+    gap: The reference machine is not chosen yet; memory high-water and 10 GiB nightly runs are not wired.
+  - id: G6
+    gate: No known exploitable vulnerability in shipped dependencies, or a VEX statement
+    status: met
+    evidence:
+      - .github/workflows/ci.yml job supply-chain (cargo deny: advisories, licenses, bans, sources)
+      - web build runs npm audit signatures
+  - id: G7
+    gate: Reproducibility comparison passes
+    status: pending
+    evidence:
+      - .github/workflows/release.yml jobs rebuild and compare
+      - tools/package-archive.py (normalized archives; verified locally twice, identical hashes)
+  - id: G8
+    gate: Every attestation verifies with the TRD §14.6 commands
+    status: pending
+    evidence:
+      - .github/workflows/build-reusable.yml job attest
+      - .github/workflows/release.yml job ghcr (cosign keyless signature)
+  - id: G9
+    gate: Deployed headers match the policy; site verification passes
+    status: owner
+    evidence:
+      - web/hosting/headers.json; web/scripts/serve.mjs; web/e2e (headers served)
+    gap: Needs the owner's choice of host and domain (TRD §23); post-deploy header check and tools/verify-site follow.
+  - id: G10
+    gate: Compliance self-assessments complete; Baseline Level 2 met with gaps documented
+    status: partial
+    evidence:
+      - docs/compliance/README.md
+    gap: Items marked owner below (MFA, rulesets, security mailbox) need confirmation.
+  - id: G11
+    gate: Accessibility gates pass
+    status: partial
+    evidence:
+      - web/e2e/app.spec.ts (axe-core WCAG 2.2 AA in light and dark, Chromium, Firefox, WebKit; keyboard-only; 320 px)
+    gap: Manual NVDA + Firefox and VoiceOver + Safari passes are release gates still to run (TRD §19.10).
+  - id: G12
+    gate: Documentation complete; generated documentation in sync
+    status: partial
+    evidence:
+      - .github/workflows/ci.yml job lint (gen-docs --check for docs/rules.md and web rule data)
+      - docs/installation/README.md, docs/privacy.md, docs/release.md, SECURITY.md
+    gap: Install commands become exact at release time, once package names are reserved.
+
+controls:
+  - id: C-NET
+    control: No network or process creation during processing
+    status: met
+    evidence:
+      - clippy.toml and deny.toml bans
+      - tools/check-imports.sh (release binaries, every OS in CI)
+      - tools/check-no-network.sh (strace over the corpus, Linux CI)
+      - crates/cli/tests/platform.rs linux_hardening_blocks_sockets_and_dumps (seccomp EPERM)
+      - web/e2e/app.spec.ts (no requests beyond the page's own assets)
+  - id: C-HARDEN
+    control: Process hardening before input is read
+    status: met
+    evidence:
+      - crates/cli/src/harden (RLIMIT_CORE, PR_SET_DUMPABLE, seccomp, Windows mitigation policies)
+      - report field sandbox (seccomp on Linux, process-mitigations on Windows)
+  - id: C-PIN
+    control: Dependencies and actions pinned; 7-day cooldown
+    status: met
+    evidence:
+      - Cargo.lock, fuzz/Cargo.lock, web/package-lock.json, python/build-requirements.txt (hashes)
+      - every workflow action pinned by commit SHA
+      - .github/dependabot.yml cooldown default-days 7
+  - id: C-REVIEW
+    control: Protected default branch, required checks, signed tags
+    status: owner
+    evidence:
+      - TRD §15.1 ruleset definition
+    gap: Repository rulesets are GitHub settings; the owner applies them.
+  - id: C-MFA
+    control: Phishing-resistant MFA for maintainers on GitHub, PyPI, host, and registrar
+    status: owner
+    evidence:
+      - GOVERNANCE.md
+  - id: C-VULN
+    control: Private vulnerability reporting and advisories
+    status: partial
+    evidence:
+      - SECURITY.md; web/public/.well-known/security.txt
+    gap: GitHub private vulnerability reporting must be enabled in repository settings; a security mailbox is an owner decision.

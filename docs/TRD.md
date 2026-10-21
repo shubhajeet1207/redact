@@ -2,10 +2,10 @@
 
 | Field | Value |
 | --- | --- |
-| Version | 2.1 (implementation alignment of v2.0; v2.0 replaced [TRD v1.0](archive/TRD-v1.0.md)) |
+| Version | 2.2 (implementation alignment of v2.0; v2.0 replaced [TRD v1.0](archive/TRD-v1.0.md)) |
 | Date | 21 October 2026 |
 | Product baseline | [PRD v1.1](PRD.md) and [PRD review](PRD_REVIEW.md) (findings PRV-01 to PRV-27) |
-| Status | PRD v1.1 and ADR-01 approved by the owner on 21 October 2026. Milestones M0 and M1 (engine) are implemented; v2.1 records the design rulings made while implementing them (see the revision history). |
+| Status | PRD v1.1 and ADR-01 approved by the owner on 21 October 2026. Milestones M0 to M3 are implemented, and the M4 and M5 workflows, evidence register, and runbook exist; v2.1 and v2.2 record the design rulings made while implementing them (see the revision history). Publication remains an owner action. |
 | Intended readers | Engineers implementing the engine, CLI, browser app, tests, and release pipeline; security reviewers; auditors checking compliance evidence |
 
 The keywords MUST, MUST NOT, SHOULD, SHOULD NOT, and MAY are used as described in RFC 2119 and RFC 8174. Statements in this document describe required behavior and planned verification. None is a claim that a built product has passed a test. Every numeric performance figure is a release gate to be measured, not a measured result.
@@ -15,6 +15,7 @@ The keywords MUST, MUST NOT, SHOULD, SHOULD NOT, and MAY are used as described i
 | Version | Date | Change |
 | --- | --- | --- |
 | 2.0 | 21 October 2026 | Fresh design replacing TRD v1.0. |
+| 2.2 | 22 October 2026 | M2 implementation rulings: own async-signal-safe handlers instead of `ctrlc`, so SIGINT and SIGTERM keep distinct exit codes (§9.4, §14.3); no environment reads at all, including `TERM` (§9.8); display escaping applies to standard output only (§9.5); report fields that need a summary are `null` after an early failure, `sandbox` adds `process-mitigations`, and the text report adds error and warning lines (§9.6); FIFOs are opened non-blocking so they can be rejected (§9.2); temporary names use `/dev/urandom` or `BCryptGenRandom` (§9.3); file opens are confined to `io.rs`, `atomic.rs`, and `osrand.rs` by review, because Clippy cannot scope a ban to modules (§9.8); the seccomp effect test uses the `sandbox-probe` feature (§19.6); packaging specifics (§9.9, §14.2). |
 | 2.1 | 21 October 2026 | M3 implementation rulings: one Trusted Types policy that accepts only the hashed worker URL, because the `Worker` constructor is a Trusted Types sink (§10.6, §11.3); separate paste and file workers from the same script (§10.5); 1 MiB `File.slice()` reads (§10.4); static copy in `index.html`, runtime text in `strings.ts` (§10.1); the product mark is the favicon (§10.1); toolchain and npm settings (§4); `security.txt` `Canonical` once the domain exists (§11.3). M1 implementation rulings: UTF-16 detection without look-ahead (§5.2); SR-002 scheme list and fail-closed unknown schemes (§6.3); URL extent ends at backticks and controls (§6.4); private-key blocks own their byte ranges, and a removed body line after a lone CR keeps its placeholder (§6.9); headers that follow a cookie field are parsed on their own (§6.10); per-line fixed point that makes idempotence hold by construction, with a fail-closed cap (§7.1); P-2 stated as an identical separator sequence (§7.2); warning `UNSTABLE_LINE_REDACTED` (§5.1, §7.1). |
 
 ## Contents
@@ -164,7 +165,9 @@ spymonk-redact/
       build.rs                  manifest validation and code generation
       src/ codec.rs framing.rs engine.rs detectors/ resolve.rs census.rs model.rs
     cli/                        spymonk-redact (bin)
-      src/ main.rs args.rs io.rs atomic.rs render.rs report.rs harden/ signals.rs
+      src/ main.rs args.rs run.rs io.rs atomic.rs render.rs report.rs json.rs catalog.rs
+           error.rs osrand.rs signals.rs harden/{mod,unix,linux,windows}.rs
+      build.rs                  rule catalog for --list-rules; build identity
     wasm/                       spymonk-redact-wasm (cdylib)
   fuzz/                         cargo-fuzz targets
   python/
@@ -180,7 +183,9 @@ spymonk-redact/
     public/.well-known/security.txt
     hosting/headers.json        provider-neutral header policy, rendered per host
     tests/  e2e/
-  tools/                        bench, corpus generators, reproducibility diff, site verifier, header checker
+  tools/                        package-archive.py, check-imports.sh, check-no-network.sh,
+                                fixture-inputs.py (bench: crates/core/examples/throughput.rs)
+  packaging/Containerfile       FROM scratch image around the static musl binary
   .github/workflows/            ci.yml  release.yml  build-reusable.yml  scorecard.yml  fuzz.yml
   docs/                         PRD, reviews, TRD, generated rule reference, guides
 ```
@@ -765,7 +770,7 @@ Information
 
 ### 9.2 Input handling
 
-- A file operand is opened read-only, and its type is checked through the open handle (`fstat` or `GetFileInformationByHandle`), so the check and the open refer to the same file. Directories, FIFOs, devices, and sockets are rejected with `INPUT_READ_FAILED`. Standard input may be a pipe, file, or terminal.
+- A file operand is opened read-only, and its type is checked through the open handle (`fstat` or `GetFileInformationByHandle`), so the check and the open refer to the same file. On Unix the open uses `O_NONBLOCK`, so a FIFO operand is rejected instead of blocking the open. Directories, FIFOs, devices, and sockets are rejected with `INPUT_READ_FAILED`. Standard input may be a pipe, file, or terminal.
 - Input is read in 64 KiB chunks and passed to `Sanitizer::push`. Output is drained after each chunk.
 - The input file is never opened for writing. Its contents, permissions, and timestamps are untouched. Access time may change according to the operating system's mount options.
 
@@ -775,7 +780,7 @@ Before reading any input, the CLI checks the output path:
 
 1. **Same file.** If the path exists and has the same file identity as the input (device and inode on Unix; volume serial number and file index on Windows), the run fails with `OUTPUT_IS_INPUT` before anything is read.
 2. **Not a regular file.** If the path exists and is a symbolic link, directory, or other non-regular file, the run fails with `OUTPUT_NOT_REGULAR`.
-3. **Temporary file.** The CLI creates a temporary file in the target's directory, named `.<target>.<random 128-bit hex>.tmp`. It is opened create-new and without following links (`O_CREAT|O_EXCL|O_NOFOLLOW` on Unix; `CREATE_NEW` on Windows), with mode `0600` on Unix and the directory's inherited ACL on Windows. Randomness comes from the operating system's random source; this is the only use of randomness, and it never affects content.
+3. **Temporary file.** The CLI creates a temporary file in the target's directory, named `.<target>.<random 128-bit hex>.tmp`. It is opened create-new and without following links (`O_CREAT|O_EXCL|O_NOFOLLOW` on Unix; `CREATE_NEW` on Windows), with mode `0600` on Unix and the directory's inherited ACL on Windows. Randomness comes from the operating system's random source (`/dev/urandom` on Unix, `BCryptGenRandom` on Windows); this is the only use of randomness, and it never affects content.
 4. **Write.** Output streams into the temporary file.
 5. **Commit.** On success, the CLI flushes the file, syncs it (`fsync` or `FlushFileBuffers`), renames it over the target (`rename`, or `MoveFileExW` with `MOVEFILE_REPLACE_EXISTING`), and on Unix syncs the directory.
 6. **Failure.** On any error, signal, or panic, the temporary file is deleted and the target is untouched.
@@ -786,8 +791,8 @@ The new file does not inherit an existing target's permissions; it is created pr
 
 - Output is written as raw bytes in the input's encoding. Nothing is added: no newline, color, or banner. Output is written whenever the 64 KiB buffer fills, and once more at the end, so memory stays bounded while streaming.
 - If a failure occurs while streaming, emitted output stops at the last complete line. The exit code is non-zero, and the report shows `"outputComplete": false`. Pipelines that need completeness use `--output` or check the report.
-- **Broken pipe.** Processing stops silently. The exit code is 141 on Unix, matching the shell convention for SIGPIPE, and 1 on Windows.
-- **Interruption.** SIGINT, SIGTERM, and Ctrl+C set a flag that is checked between chunks and lines. The CLI removes its temporary files and exits with 130 (SIGINT or Ctrl+C) or 143 (SIGTERM).
+- **Broken pipe.** Processing stops silently: nothing is written to standard error and no report is produced. The exit code is 141 on Unix, matching the shell convention for SIGPIPE, and 1 on Windows.
+- **Interruption.** SIGINT, SIGTERM, and Ctrl+C set a flag that is checked between chunks and lines. The CLI removes its temporary files and exits with 130 (SIGINT or Ctrl+C) or 143 (SIGTERM). The handlers are the CLI's own (`sigaction` without `SA_RESTART`, so a blocking read returns and the flag is seen; `SetConsoleCtrlHandler` on Windows) and only store the signal number; `ctrlc` cannot tell SIGINT from SIGTERM.
 
 ### 9.5 Terminal rendering (display safety)
 
@@ -801,7 +806,7 @@ When `--escape-controls` resolves to on (the default when standard output is a t
 
 The marker is `<U+XXXX>`. This blocks terminal escape injection (CWE-150) and visual overwrite of content.
 
-When standard output is redirected, `--escape-controls` resolves to off and output stays byte-exact. `--escape-controls always` forces visible markers even when redirected; the report then records `"displayEscaped": true`. On Windows consoles, output is written as UTF-16 through the console API, as the Rust standard library does for console handles, and virtual-terminal processing is never enabled by the tool.
+Escaping applies only to standard output: a file written with `--output` is always byte-exact, whatever `--escape-controls` says. When standard output is redirected, `--escape-controls` resolves to off and output stays byte-exact. `--escape-controls always` forces visible markers even when redirected; the report then records `"displayEscaped": true`. On Windows consoles, output is written as UTF-16 through the console API, as the Rust standard library does for console handles, and virtual-terminal processing is never enabled by the tool.
 
 The census counts each category in every mode. A non-zero count adds the notice line `Output contains N hidden or control characters; they may change how text appears.`
 
@@ -845,7 +850,9 @@ Per-rule counts appear in rule-ID order, only when non-zero; zero replacements p
 }
 ```
 
-- On failure, a report is still produced when requested, with `"status": "failed"`, `"outputComplete": false`, and `"error": { "code": "LINE_TOO_LONG", "line": 812 }`.
+- On failure, a report is still produced when requested, with `"status": "failed"`, `"outputComplete": false`, and `"error": { "code": "LINE_TOO_LONG", "line": 812 }`. Fields that need the final summary (`input.lines`, `replacements`, `hidden`, `invalidUtf8Replaced`) are `null`, and `input.encoding` is `null` when the failure came before any input was read.
+- `sandbox` is `seccomp` when the Linux filter is active, `process-mitigations` when every Windows mitigation policy applied, and `none` otherwise.
+- The text report adds `error=CODE line=N` after a failure and one line per warning.
 - When the JSON report goes to standard error, standard error carries exactly one JSON document. The review notice and the hidden-character notice appear only inside it, in `notice`, `hidden`, and `warnings`, and are not printed as extra text lines, so machine parsing stays reliable. With `--report-file`, the plain-text notices still go to standard error.
 - Reports never contain matched values, input content, file names, paths, hashes of content, or environment data.
 - Byte counts and line counts are considered safe metadata.
@@ -872,8 +879,8 @@ These steps run at start-up, before any input is read:
 - **Windows mitigations.** Error dialogs are suppressed with `SetErrorMode`, and available process mitigation policies are applied through `SetProcessMitigationPolicy`: dynamic-code prohibition, extension-point disablement, and strict handle checks. Policies the OS cannot apply are skipped and recorded.
 - **Panics.** The release profile uses `panic = "abort"`. A panic hook prints only `spymonk-redact: internal error (INTERNAL_ERROR)`, deletes temporary files, and exits with code 1 without calling `abort`, so no crash dump is produced. The panic payload, which might contain data, is never printed.
 - **Linux seccomp.** After the input, output, and temporary-file handles are open, a seccomp-BPF deny filter (built with `seccompiler`, with no libseccomp dependency) returns `EPERM` for `socket`, `socketpair`, `connect`, `bind`, `listen`, `accept`, `accept4`, `sendto`, `sendmsg`, `sendmmsg`, `execve`, `execveat`, `ptrace`, `process_vm_readv`, and `process_vm_writev`. If the kernel refuses the filter, processing continues and the report records `"sandbox": "none"`.
-- **No environment access.** The CLI reads no environment variables except `TERM`, and only to decide terminal rendering. It never reads variables looking for secrets or configuration.
-- **Static bans.** `clippy.toml` uses `disallowed-types` and `disallowed-methods` to forbid `std::net::*`, `std::process::Command`, `std::env::var*` except in the one audited `render.rs` call, and file opens outside `io.rs` and `atomic.rs`. `deny.toml` bans networking and process crates, including `reqwest`, `hyper`, `h2`, `ureq`, `curl`, `isahc`, `tokio` with `net`, `mio`, `socket2`, `openssl`, `native-tls`, `rustls`, and `duct`.
+- **No environment access.** The CLI reads no environment variables at all; terminal rendering is decided by whether standard output is a terminal. Build scripts read Cargo's build variables, which only become fixed strings in the binary.
+- **Static bans.** `clippy.toml` uses `disallowed-types` and `disallowed-methods` to forbid `std::net::*`, `std::process::Command`, and `std::env::var*`. File opens are confined to `io.rs`, `atomic.rs`, and `osrand.rs` (`/dev/urandom`) by review, because Clippy bans cannot be scoped to modules. `deny.toml` bans networking and process crates, including `reqwest`, `hyper`, `h2`, `ureq`, `curl`, `isahc`, `tokio` with `net`, `mio`, `socket2`, `openssl`, `native-tls`, `rustls`, and `duct`.
 - **Release check.** CI inspects each release binary's imported symbols and DLLs and fails if any socket, DNS, HTTP, or process-creation API is imported. The tools are `nm -D` or `readelf` for ELF, `dyld_info` or `otool` for Mach-O, and `dumpbin /imports` or `llvm-objdump` for PE. If a platform's standard library always links a networking DLL, the check asserts at symbol level that no networking function is referenced, and the runtime test (§19.7) confirms that none is ever called.
 
 ### 9.9 Python launcher
@@ -1237,7 +1244,7 @@ Every dimension has a stated design, limit, headroom, and a path for growth that
 #### Engine and runtime dependencies
 
 - *Engine:* `memchr`, `aho-corasick`.
-- *CLI:* `lexopt` and `ctrlc`, plus `libc`, `seccompiler`, or `windows-sys` depending on platform.
+- *CLI:* `lexopt`, plus `libc`, `seccompiler`, or `windows-sys` depending on platform. Signal handling is the CLI's own (§9.4), so `ctrlc` and its `nix` dependency are not needed.
 - *WebAssembly bindings:* `wasm-bindgen` and `zeroize`.
 - *Build-only:* `sha2` and `serde_json`, used inside `build.rs`. They never ship in the binary.
 - Any addition requires a written justification in the pull request and a cargo-vet audit or a trusted import of audits from organizations that publish them.

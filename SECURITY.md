@@ -36,7 +36,7 @@ Fixes are published as GitHub Security Advisories with CVE identifiers, and we c
 
 ## Supported versions
 
-Security fixes are released for the latest minor version. The previous minor version receives security fixes for 6 months after a new minor version is published. No version has been released yet.
+Security fixes are released for the latest minor version. The previous minor version receives security fixes for 6 months after a new minor version is published. A new major version overlaps the previous one by 12 months. This is the project's declared support period. No version has been released yet.
 
 ## Verifying releases
 
