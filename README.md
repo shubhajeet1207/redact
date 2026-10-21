@@ -4,96 +4,111 @@
 
 **Sanitize before you share. Preserve the context.**
 
-SpyMonk Redact is a planned local-first developer safety tool for removing secrets and personal identifiers from logs, stack traces, configuration snippets, terminal output, and API diagnostics before they leave your device. It is designed for the moment between debugging and sharing: keep the useful evidence, replace the risky values, and review the result before sending it anywhere.
+SpyMonk Redact is a local-first redaction engine for the moment between debugging and sharing. It removes likely secrets and personal identifiers from logs, stack traces, configuration fragments, terminal output, and API diagnostics while retaining the surrounding context that makes those artifacts useful.
 
-> **Project status — design phase.** This repository currently contains product and technical design documentation only. No CLI, browser playground, package, container image, or hosted service has been implemented or released. The current [PRD](docs/PRD.md) awaits owner approval, and the Rust-plus-WebAssembly architecture decision awaits confirmation.
+> **Status — core implementation in progress.** The Rust rule compiler and streaming detection engine are implemented in this repository. A CLI, browser playground, WebAssembly bindings, installable packages, and hosted experience are not implemented yet. The engine is not release-ready while the remaining idempotence property regression is being resolved.
 
-[Product requirements](docs/PRD.md) · [Technical design](docs/TRD.md) · [Installation & verification status](docs/installation/README.md) · [PRD review](docs/PRD_REVIEW.md)
+[Product requirements](docs/PRD.md) · [Technical design](docs/TRD.md) · [Rule reference](docs/rules.md) · [Development plan](docs/plans/2026-10-21-m0-m1-foundations-and-engine.md) · [Installation status](docs/installation/README.md)
 
-## The problem
+## Why it exists
 
-Debugging material often includes credentials, session data, personal email addresses, private paths, and connection strings. Manual cleanup is slow, error-prone, and easy to skip under pressure. Repository scanners help protect source control and CI, but they do not give developers a quick, local text-in/text-out step before pasting an excerpt into a ticket, pull request, chat, support case, or AI assistant.
+Debugging artifacts routinely contain credentials, tokens, session data, email addresses, private paths, and connection strings. Repository scanners protect source control and CI, but they do not help at the point a developer needs to paste an excerpt into a ticket, pull request, chat, support case, or AI assistant.
 
-SpyMonk Redact is designed to fill that gap without turning diagnostic data into another hosted data stream.
+SpyMonk Redact is being built as a fast, deterministic local step for that workflow: redact risky values, retain the evidence around them, then review the result before sharing.
 
-## Designed product experience
+## What the engine detects
 
-| Capability | Planned behavior |
+The current rule manifest defines nine detector families:
+
+| Rule | Coverage | Default |
+| --- | --- | --- |
+| SR-001 | Named secret values such as `password`, `token`, and `api_key` | On |
+| SR-002 | Authorization credentials | On |
+| SR-003 | Passwords embedded in URLs | On |
+| SR-004 | Usernames in home-directory paths | On |
+| SR-005 | Email addresses | On |
+| SR-006 | RFC 1918 and IPv6 unique-local addresses | Opt-in |
+| SR-007 | Recognized credential formats | On |
+| SR-008 | Private-key PEM blocks | On |
+| SR-009 | Cookie values | On |
+
+Rules are compiled from [`rules/rules.v1.json`](rules/rules.v1.json) into the core build. The generated [rule reference](docs/rules.md) documents the exact supported formats, placeholders, examples, and exclusions.
+
+## Current implementation
+
+The workspace contains a `no_std` + `alloc` Rust engine designed for deterministic, bounded streaming processing. It includes:
+
+- UTF-8 and UTF-16 decoding with BOM preservation and explicit error handling;
+- chunk-independent line framing that preserves LF, CRLF, and lone-CR separators;
+- deterministic candidate overlap resolution and findings ranges;
+- per-rule summaries and hidden-character census data;
+- synthetic golden fixtures, property tests, adversarial throughput tests, and a libFuzzer scaffold;
+- generated Rust rule tables and Markdown rule documentation.
+
+The browser product described in the PRD is a later milestone. There is currently no web app, development server, CLI binary, or published package to run.
+
+## Development status
+
+| Area | Status |
 | --- | --- |
-| **Redact common disclosures** | Detect named secret values, authorization headers, cookie values, credentials embedded in URLs, known token formats, private-key blocks, email addresses, and usernames in home-directory paths. |
-| **Keep diagnostics useful** | Replace values rather than entire lines, retaining surrounding logs, structure, field names, schemes, hosts, and paths wherever safe. |
-| **Use it where you work** | Provide the same deterministic engine through `spymonk-redact` for terminals and pipelines, and a browser playground for pasted text and local files. |
-| **Make findings reviewable** | Show total and per-rule replacement counts, active options, hidden-character warnings, completion state, and a reminder that the output still needs review. |
-| **Handle optional privacy rules** | Redact email addresses by default; let users opt into private-IP redaction when their sharing context requires it. |
-| **Protect large inputs** | Stream CLI input with bounded memory; the browser design includes pasted-text and local-file modes with progress, cancellation, preview, and save controls. |
+| M0 foundations and rule compiler | Implemented |
+| M1 streaming detection engine | Implemented; hardening in progress |
+| Golden fixtures, adversarial cases, generated rule docs | Implemented |
+| Property invariants P-1, P-2, P-3, P-5, P-6 | Covered by tests |
+| Property invariant P-4 (idempotence) | One malformed mixed-header regression remains open |
+| M2 command-line interface | Not started |
+| M3 browser/WebAssembly playground | Not started |
+| M4–M5 release evidence and packaging | Not started |
 
-## Local by design
+The project intentionally does not claim release readiness until all engine properties and release gates pass.
 
-The planned product has a deliberately narrow trust boundary:
+## Local-first by design
 
-- Processing happens on the user's device; no account, API server, database, cloud model, telemetry, or update check is part of the product design.
-- The browser app is planned as static assets. Once loaded, sanitization is designed to make no network requests and to use no cookies or client storage.
-- The CLI is designed to emit sanitized text only to standard output or an explicitly requested output path; reports contain counts and status, never matches or input content.
-- The browser and CLI are designed to share one compiled engine and one compiled rule set, so the same input and options yield the same result.
+The core library has no network, filesystem, process, clock, randomness, or environment access. The intended CLI and browser surfaces will share the same compiled rules and engine so equivalent inputs produce equivalent output.
 
-## What it does not promise
+SpyMonk Redact is not a guarantee that content is safe to share. It complements—not replaces—credential rotation, repository scanning, enterprise DLP, or human review. If a credential has already been exposed, rotate it.
 
-SpyMonk Redact is not a guarantee that text is safe to share. It is not a replacement for credential rotation, enterprise DLP, repository secret scanning, or human review. It is also not designed to scan repositories, browser tabs, clipboards, or directories automatically; send data to a cloud service; inspect whether a credential is valid; or accept user-supplied regular expressions.
+## Building the current workspace
 
-If a secret has already been exposed, it should be rotated. Every successful planned flow includes that reminder.
+Install the Rust toolchain specified by [`rust-toolchain.toml`](rust-toolchain.toml), then run:
 
-## Planned architecture
-
-The current technical design specifies a deterministic Rust core compiled for two surfaces:
-
-```text
-stdin / file / pasted text / local file
-                │
-                ▼
-  spymonk-redact-core (Rust, bounded streaming, compiled rules)
-                │
-         ┌──────┴──────┐
-         ▼             ▼
-  Native CLI      WebAssembly worker
-         │             │
-  terminal/files   static browser playground
+```sh
+cargo fmt --all --check
+cargo clippy --workspace --all-targets --locked -- -D warnings
+cargo test --workspace --locked
 ```
 
-The proposed core has no file, network, process, clock, environment, or logging access. Rules are compiled into the build from a versioned manifest, and detection is designed around linear scanners rather than backtracking regular expressions. See the [TRD](docs/TRD.md) for the security model, release-verification design, performance gates, and test plan.
+The final command currently exposes the open P-4 regression noted above. The targeted suites for codecs, framing, detectors, fixtures, adversarial inputs, and generated-rule documentation are available under `crates/core/tests/` and `crates/rules/tests/`.
 
-## Delivery path
+Optional security and fuzz tooling is configured but must be installed separately:
 
-| Milestone | Focus |
-| --- | --- |
-| **M0 — Foundations** | Repository structure, rule-set governance, CI hardening, license and contributor policy decisions. |
-| **M1 — Engine** | Streaming sanitizer, codecs, deterministic rule resolution, fixtures, properties, fuzzing, and performance checks. |
-| **M2 — CLI & packaging** | Hardened command-line interface, atomic output, reports, Python install channels, archives, and container image. |
-| **M3 — Browser** | WebAssembly bindings, worker-based playground, local-file processing, accessibility, and CLI/browser parity. |
-| **M4–M5 — Evidence & release** | Reproducibility, SBOMs, attestations, verification guides, deployment checks, and release preparation. |
+```sh
+cargo install cargo-deny --locked
+cargo install cargo-fuzz
+```
 
-No milestone should be interpreted as shipped functionality until its release gates have passed.
+## Repository layout
 
-## Installation and usage
-
-There is **nothing to install yet**. Publication names, release channels, signing, and verification evidence remain owner decisions, and this repository intentionally does not publish speculative `pip install` commands. The planned channels and the conditions for publishing real commands are documented in [Installation & verification status](docs/installation/README.md).
+```text
+crates/core/       Streaming redaction engine
+crates/rules/      Manifest validation and rule/documentation generator
+rules/             Versioned rule manifest and schema
+fixtures/          Synthetic positive, negative, overlap, and encoding fixtures
+fuzz/              libFuzzer targets
+docs/              Product requirements, technical design, rules, and plans
+assets/            Project artwork
+```
 
 ## Documentation
 
-| Document | What it covers |
+| Document | Purpose |
 | --- | --- |
-| [Product requirements](docs/PRD.md) | Users, scope, rules, privacy boundaries, acceptance criteria, risks, and owner decisions. |
-| [Technical requirements](docs/TRD.md) | The planned Rust/Wasm architecture, security controls, supply-chain design, testing, and delivery gates. |
-| [PRD review](docs/PRD_REVIEW.md) | Security, compliance, integrity, and governance findings that informed the current PRD. |
-| [Installation & verification status](docs/installation/README.md) | Current release availability and the intended installation and verification channels. |
-| [Historical documents](docs/archive/) | Superseded v1.0 PRD, TRD, and reviews. |
+| [PRD](docs/PRD.md) | Product scope, users, privacy model, and acceptance criteria. |
+| [TRD](docs/TRD.md) | Engine architecture, security model, invariants, and release gates. |
+| [Rule reference](docs/rules.md) | Generated detector catalogue and rule details. |
+| [M0/M1 implementation plan](docs/plans/2026-10-21-m0-m1-foundations-and-engine.md) | Foundation and engine delivery checklist. |
+| [Installation status](docs/installation/README.md) | Publication and verification status. |
 
-## Current repository contents
+## Contributing
 
-```text
-docs/                  Product requirements, technical design, reviews, and release-planning material
-docs/installation/     Canonical installation and verification status
-docs/archive/          Superseded design records
-assets/                Project banner artwork
-```
-
-This project is being designed as an open, inspectable developer-safety tool. Implementation begins only after the outstanding product and architecture decisions are approved.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md) before opening an issue or proposing a change. Use only synthetic values in tests, fixtures, examples, and reports.
