@@ -1,0 +1,28 @@
+$ pip install -r requirements.txt
+Collecting requests==2.32.3 (from -r requirements.txt (line 1))
+  Downloading requests-2.32.3-py3-none-any.whl.metadata (4.6 kB)
+Collecting urllib3<3,>=1.21.1 (from requests==2.32.3->-r requirements.txt (line 1))
+Successfully installed certifi-2026.8.30 charset-normalizer-3.4.3 idna-3.10 requests-2.32.3 urllib3-2.5.0
+$ npm install --save-dev typescript@5.9.3
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory.
+added 1 package, and audited 214 packages in 2s
+$ cargo update -p serde
+    Updating crates.io index
+     Locking 2 packages to latest compatible versions
+    Updating serde v1.0.226 -> v1.0.228
+    Updating serde_derive v1.0.226 -> v1.0.228
+$ apt-get install -y curl
+Reading package lists... Done
+Building dependency tree... Done
+The following NEW packages will be installed:
+  curl libcurl4t64
+0 upgraded, 2 newly installed, 0 to remove and 3 not upgraded.
+Setting up curl (8.14.1-2) ...
+$ brew upgrade
+==> Upgrading 2 outdated packages:
+node 24.9.0 -> 24.10.0
+git 2.51.0 -> 2.51.1
+$ go mod tidy
+go: downloading golang.org/x/net v0.44.0
+go: finding module for package github.com/example/widget/v2
+go: found github.com/example/widget/v2 in github.com/example/widget/v2 v2.3.1

@@ -1,0 +1,15 @@
+# TRD §9.8: no networking, process spawning, or environment reads anywhere in the codebase.
+# Narrow, audited exceptions must use `#[allow(clippy::disallowed_*)]` with a justification comment.
+disallowed-types = [
+  { path = "std::net::TcpStream", reason = "no network access (TRD §9.8)" },
+  { path = "std::net::TcpListener", reason = "no network access (TRD §9.8)" },
+  { path = "std::net::UdpSocket", reason = "no network access (TRD §9.8)" },
+  { path = "std::process::Command", reason = "no process execution (TRD §9.8)" },
+]
+disallowed-methods = [
+  { path = "std::env::var", reason = "no environment configuration (TRD §9.8)" },
+  { path = "std::env::var_os", reason = "no environment configuration (TRD §9.8)" },
+  { path = "std::env::vars", reason = "no environment configuration (TRD §9.8)" },
+  { path = "std::env::vars_os", reason = "no environment configuration (TRD §9.8)" },
+  { path = "std::net::ToSocketAddrs::to_socket_addrs", reason = "no DNS resolution (TRD §9.8)" },
+]

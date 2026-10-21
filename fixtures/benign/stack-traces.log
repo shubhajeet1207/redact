@@ -1,0 +1,35 @@
+2026-10-21 09:20:41.112 ERROR [http-nio-8080-exec-7] c.e.orders.OrderController : Request processing failed
+java.lang.IllegalStateException: Order 8841 is already settled
+	at com.example.orders.OrderService.settle(OrderService.java:211)
+	at com.example.orders.OrderController.settle(OrderController.java:88)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+Caused by: java.sql.SQLTransientConnectionException: HikariPool-1 - Connection is not available, request timed out after 30004ms (total=10, active=10, idle=0, waiting=3)
+	at com.zaxxer.hikari.pool.HikariPool.createTimeoutException(HikariPool.java:686)
+	... 42 common frames omitted
+Traceback (most recent call last):
+  File "/workspace/app/worker.py", line 87, in run
+    result = handler(job)
+  File "/workspace/app/handlers/report.py", line 42, in handler
+    rows = fetch_rows(job.query, limit=job.limit)
+  File "/workspace/app/db.py", line 19, in fetch_rows
+    raise TimeoutError(f"query exceeded {limit} rows or 30s")
+TimeoutError: query exceeded 5000 rows or 30s
+KeyError: 'max_tokens'
+ValueError: token_type must be one of ['bearer', 'mac']
+System.InvalidOperationException: Sequence contains no elements
+   at System.Linq.ThrowHelper.ThrowNoElementsException()
+   at Example.Billing.InvoiceBuilder.Build(Order order) in /src/Billing/InvoiceBuilder.cs:line 57
+   at Example.Billing.Api.InvoicesController.Create(CreateInvoiceRequest request) in /src/Billing/Api/InvoicesController.cs:line 33
+TypeError: Cannot read properties of undefined (reading 'items')
+    at renderCart (/app/dist/cart.js:118:27)
+    at Object.<anonymous> (/app/dist/server.js:44:5)
+    at Module._compile (node:internal/modules/cjs/loader:1554:14)
+panic: runtime error: index out of range [3] with length 3
+
+goroutine 18 [running]:
+main.(*Router).dispatch(0xc0001a2000, {0x7a3f20, 0xc000188000})
+	/go/src/example.com/router/router.go:144 +0x1d8
+thread 'main' panicked at src/parser.rs:212:17:
+called `Option::unwrap()` on a `None` value
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

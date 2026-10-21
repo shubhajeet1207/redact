@@ -1,0 +1,41 @@
+[workspace]
+resolver = "3"
+members = ["crates/rules", "crates/core", "crates/wasm"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.99"
+license = "Apache-2.0"
+repository = "https://github.com/shubhajeet1207/redact"
+publish = false
+
+[workspace.dependencies]
+memchr = { version = "2.7", default-features = false, features = ["alloc"] }
+aho-corasick = { version = "1.1", default-features = false }
+serde_json = "1"
+sha2 = "0.10"
+proptest = "1"
+base64 = "0.22"
+zeroize = { version = "=1.9.1", default-features = false, features = ["alloc"] }
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+missing_debug_implementations = "warn"
+
+[workspace.lints.clippy]
+dbg_macro = "deny"
+todo = "deny"
+unimplemented = "deny"
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+overflow-checks = true
+strip = "symbols"
+debug = false
+
+[profile.test]
+overflow-checks = true

@@ -1,0 +1,26 @@
+[package]
+name = "spymonk-redact-core"
+description = "Deterministic, streaming, no_std detection engine for SpyMonk Redact."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+memchr.workspace = true
+aho-corasick.workspace = true
+zeroize.workspace = true
+
+[build-dependencies]
+spymonk-redact-rules = { path = "../rules" }
+
+[dev-dependencies]
+proptest.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+base64.workspace = true
+
+[lints]
+workspace = true

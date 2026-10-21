@@ -1,0 +1,342 @@
+{
+  "fixtures": [
+    {
+      "id": "SR001-yaml",
+      "input": "password: hunter2",
+      "output": "password: [REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-001": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR001-env-export",
+      "input": "export GITHUB_TOKEN=fake",
+      "output": "export GITHUB_TOKEN=[REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-001": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR001-ruby-hash",
+      "input": "\"password\" => \"x\"",
+      "output": "\"password\" => \"[REDACTED]\"",
+      "replacements": 1,
+      "byRule": {
+        "SR-001": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR001-go-assign",
+      "input": "token := abc",
+      "output": "token := [REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-001": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR001-connection-string",
+      "input": "Server=db;Password=x;User=y",
+      "output": "Server=db;Password=[REDACTED];User=y",
+      "replacements": 1,
+      "byRule": {
+        "SR-001": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR001-azure-account-key",
+      "input": "AccountName=x;AccountKey=abc==;",
+      "output": "AccountName=x;AccountKey=[REDACTED];",
+      "replacements": 1,
+      "byRule": {
+        "SR-001": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR001-query-string",
+      "input": "GET /cb?access_token=abc&x=1",
+      "output": "GET /cb?access_token=[REDACTED]&x=1",
+      "replacements": 1,
+      "byRule": {
+        "SR-001": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR001-java-property",
+      "input": "-Ddb.password=x",
+      "output": "-Ddb.password=[REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-001": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR001-argv-array",
+      "input": "[\"cli\", \"--token\", \"abc\"]",
+      "output": "[\"cli\", \"--token\", \"[REDACTED]\"]",
+      "replacements": 1,
+      "byRule": {
+        "SR-001": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR001-escaped-quote",
+      "input": "\"password\": \"a\\\"b\" ok",
+      "output": "\"password\": \"[REDACTED]\" ok",
+      "replacements": 1,
+      "byRule": {
+        "SR-001": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR001-unterminated-quote",
+      "input": "password=\"abc def",
+      "output": "password=\"[REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-001": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR001-hash-in-value",
+      "input": "password=abc#123 ok",
+      "output": "password=[REDACTED] ok",
+      "replacements": 1,
+      "byRule": {
+        "SR-001": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR001-two-occurrences",
+      "input": "password=a password=a",
+      "output": "password=[REDACTED] password=[REDACTED]",
+      "replacements": 2,
+      "byRule": {
+        "SR-001": 2
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR002-basic-padding",
+      "input": "Authorization: Basic dXNlcjpwYXNz==",
+      "output": "Authorization: Basic [REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-002": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR002-digest-params",
+      "input": "Authorization: Digest username=\"a\", response=\"b\"",
+      "output": "Authorization: Digest [REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-002": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR002-aws-sigv4",
+      "input": "Authorization: AWS4-HMAC-SHA256 Credential=K/x, Signature=abc",
+      "output": "Authorization: AWS4-HMAC-SHA256 [REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-002": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR002-unknown-scheme",
+      "input": "Authorization: Custom-Scheme s3cr3t",
+      "output": "Authorization: [REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-002": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR002-curl-header",
+      "input": "curl -H \"Authorization: Bearer abc\" x",
+      "output": "curl -H \"Authorization: Bearer [REDACTED]\" x",
+      "replacements": 1,
+      "byRule": {
+        "SR-002": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR002-map-rendering",
+      "input": "{Authorization=Bearer xyz, Accept=json}",
+      "output": "{Authorization=Bearer [REDACTED], Accept=json}",
+      "replacements": 1,
+      "byRule": {
+        "SR-002": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR003-empty-username",
+      "input": "redis://:secretpw@cache:6379/0",
+      "output": "redis://:[REDACTED]@cache:6379/0",
+      "replacements": 1,
+      "byRule": {
+        "SR-003": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR003-at-in-password",
+      "input": "amqp://u:p@ss@mq/",
+      "output": "amqp://u:[REDACTED]@mq/",
+      "replacements": 1,
+      "byRule": {
+        "SR-003": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR003-nested-url",
+      "input": "https://x/?next=https://a:b@h/",
+      "output": "https://x/?next=https://a:[REDACTED]@h/",
+      "replacements": 1,
+      "byRule": {
+        "SR-003": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR003-ipv6-host",
+      "input": "http://u:pw@[fd00::1]:80/",
+      "output": "http://u:[REDACTED]@[fd00::1]:80/",
+      "replacements": 1,
+      "byRule": {
+        "SR-003": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR004-macos",
+      "input": "/Users/alex/Library/Logs",
+      "output": "/Users/[USER]/Library/Logs",
+      "replacements": 1,
+      "byRule": {
+        "SR-004": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR004-wsl",
+      "input": "/mnt/c/Users/alex/x",
+      "output": "/mnt/c/Users/[USER]/x",
+      "replacements": 1,
+      "byRule": {
+        "SR-004": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR004-json-escaped-windows",
+      "input": "{\"p\":\"C:\\\\Users\\\\alex\\\\app\"}",
+      "output": "{\"p\":\"C:\\\\Users\\\\[USER]\\\\app\"}",
+      "replacements": 1,
+      "byRule": {
+        "SR-004": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR004-quoted-with-space",
+      "input": "\"/home/John Smith/x\"",
+      "output": "\"/home/[USER]/x\"",
+      "replacements": 1,
+      "byRule": {
+        "SR-004": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR004-file-url",
+      "input": "file:///home/alex/notes.txt",
+      "output": "file:///home/[USER]/notes.txt",
+      "replacements": 1,
+      "byRule": {
+        "SR-004": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR005-trailing-dot",
+      "input": "mail alex@example.com.",
+      "output": "mail [EMAIL REDACTED].",
+      "replacements": 1,
+      "byRule": {
+        "SR-005": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR005-angle-brackets",
+      "input": "<alex.k+tag@mail.example.co.uk>",
+      "output": "<[EMAIL REDACTED]>",
+      "replacements": 1,
+      "byRule": {
+        "SR-005": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR006-cidr",
+      "input": "net 10.0.0.0/8",
+      "options": {
+        "email": true,
+        "privateIp": true
+      },
+      "output": "net [PRIVATE IP REDACTED]/8",
+      "replacements": 1,
+      "byRule": {
+        "SR-006": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR006-ipv6-zone",
+      "input": "fd00::1%eth0",
+      "options": {
+        "email": true,
+        "privateIp": true
+      },
+      "output": "[PRIVATE IP REDACTED]%eth0",
+      "replacements": 1,
+      "byRule": {
+        "SR-006": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR009-quoted-cookie",
+      "input": "Cookie: a=\"x y\"",
+      "output": "Cookie: a=\"[REDACTED]\"",
+      "replacements": 1,
+      "byRule": {
+        "SR-009": 1
+      },
+      "lines": 1
+    }
+  ]
+}

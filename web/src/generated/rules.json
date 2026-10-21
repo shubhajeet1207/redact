@@ -1,0 +1,255 @@
+{
+  "generatedBy": "cargo run -p spymonk-redact-rules --bin gen-docs (from rules/rules.v1.json; do not edit)",
+  "placeholders": [
+    "[REDACTED]",
+    "[USER]",
+    "[EMAIL REDACTED]",
+    "[PRIVATE IP REDACTED]",
+    "[PRIVATE KEY REDACTED]"
+  ],
+  "precedence": [
+    "SR-008",
+    "SR-007",
+    "SR-002",
+    "SR-009",
+    "SR-001",
+    "SR-003",
+    "SR-004",
+    "SR-005",
+    "SR-006"
+  ],
+  "ruleVersion": "1.0.0",
+  "rules": [
+    {
+      "defaultEnabled": true,
+      "description": "Redacts the value assigned to a key whose final segment names a secret, such as password=, DB_PASSWORD=, \"clientSecret\": or --password. Keys are split into segments at _, -, . and camel-case transitions.",
+      "examples": [
+        {
+          "input": "password=fake-value",
+          "output": "password=[REDACTED]"
+        },
+        {
+          "input": "export GITHUB_TOKEN=fake",
+          "output": "export GITHUB_TOKEN=[REDACTED]"
+        },
+        {
+          "input": "\"clientSecret\": \"fake\"",
+          "output": "\"clientSecret\": \"[REDACTED]\""
+        },
+        {
+          "input": "--password fake --verbose",
+          "output": "--password [REDACTED] --verbose"
+        }
+      ],
+      "id": "SR-001",
+      "limitations": [
+        "Unquoted values end at whitespace, , ; & quotes and brackets, so an unquoted password containing those characters is only partly redacted; quoted values are fully handled.",
+        "Multi-line strings, arrays, and objects are not treated as assigned values."
+      ],
+      "name": "Named secret values",
+      "nonExamples": [
+        "password_length=16",
+        "token_type=Bearer",
+        "max_tokens=10",
+        "password=null"
+      ],
+      "optional": false,
+      "placeholder": "[REDACTED]"
+    },
+    {
+      "defaultEnabled": true,
+      "description": "Redacts the credential in Authorization and Proxy-Authorization fields while keeping a recognized scheme name. Parameterized schemes such as Digest are redacted to the end of the field; when the first word is not a recognized scheme, the whole field is redacted.",
+      "examples": [
+        {
+          "input": "Authorization: Bearer fake-token",
+          "output": "Authorization: Bearer [REDACTED]"
+        },
+        {
+          "input": "\"authorization\": \"Basic ZmFrZTpmYWtl\"",
+          "output": "\"authorization\": \"Basic [REDACTED]\""
+        }
+      ],
+      "id": "SR-002",
+      "limitations": [
+        "Credentials are never decoded; header names other than the two listed are not covered.",
+        "An unrecognized scheme name is redacted together with its credential."
+      ],
+      "name": "Authorization credentials",
+      "nonExamples": [
+        "Authorization: [REDACTED]"
+      ],
+      "optional": false,
+      "placeholder": "[REDACTED]"
+    },
+    {
+      "defaultEnabled": true,
+      "description": "Redacts the password in scheme://user:password@host for any scheme, keeping scheme, user, host, port, path, query, and fragment.",
+      "examples": [
+        {
+          "input": "postgresql://app:fake-pass@db/app",
+          "output": "postgresql://app:[REDACTED]@db/app"
+        },
+        {
+          "input": "jdbc:mysql://root:fake@10.0.0.5:3306/x",
+          "output": "jdbc:mysql://root:[REDACTED]@10.0.0.5:3306/x"
+        }
+      ],
+      "id": "SR-003",
+      "limitations": [
+        "User information without a password separator is not covered; reserved delimiters inside passwords must be percent-encoded."
+      ],
+      "name": "URL credentials",
+      "nonExamples": [
+        "https://user@host/path",
+        "https://host:8443/path"
+      ],
+      "optional": false,
+      "placeholder": "[REDACTED]"
+    },
+    {
+      "defaultEnabled": true,
+      "description": "Redacts the username segment of /home/<user>, /Users/<user>, and C:\\Users\\<user> paths, including JSON-escaped Windows separators, keeping the rest of the path.",
+      "examples": [
+        {
+          "input": "/home/alex/app/config.yml",
+          "output": "/home/[USER]/app/config.yml"
+        },
+        {
+          "input": "C:\\Users\\alex\\app.log",
+          "output": "C:\\Users\\[USER]\\app.log"
+        },
+        {
+          "input": "HOME=/home/alex",
+          "output": "HOME=/home/[USER]"
+        }
+      ],
+      "id": "SR-004",
+      "limitations": [
+        "UNC paths, ~user, C:\\Documents and Settings\\, and personal names elsewhere in text are not covered."
+      ],
+      "name": "Home-directory usernames",
+      "nonExamples": [
+        "see https://example.com/home/about/",
+        "/home/1001/"
+      ],
+      "optional": false,
+      "placeholder": "[USER]"
+    },
+    {
+      "defaultEnabled": true,
+      "description": "Redacts email-shaped strings using a pragmatic ASCII grammar. Inside a URL authority, only the username part can match.",
+      "examples": [
+        {
+          "input": "user=alex@example.com",
+          "output": "user=[EMAIL REDACTED]"
+        }
+      ],
+      "id": "SR-005",
+      "limitations": [
+        "Quoted local parts, internationalized addresses, address literals, and single-label domains are not covered."
+      ],
+      "name": "Email addresses",
+      "nonExamples": [
+        "alex@localhost",
+        "postgresql://app:pw@db.example/app"
+      ],
+      "optional": true,
+      "placeholder": "[EMAIL REDACTED]"
+    },
+    {
+      "defaultEnabled": false,
+      "description": "Redacts RFC 1918 IPv4 addresses and IPv6 unique-local addresses, keeping ports, CIDR suffixes, zone identifiers, and URL brackets.",
+      "examples": [
+        {
+          "input": "host=10.0.0.8:5432",
+          "output": "host=[PRIVATE IP REDACTED]:5432"
+        },
+        {
+          "input": "addr=[fd12:3456::1]:443",
+          "output": "addr=[[PRIVATE IP REDACTED]]:443"
+        }
+      ],
+      "id": "SR-006",
+      "limitations": [
+        "Public, loopback, link-local, shared-address-space, and integer or hexadecimal IP encodings are not covered."
+      ],
+      "name": "Private IP addresses",
+      "nonExamples": [
+        "host=172.32.0.1",
+        "110.0.0.1",
+        "10.0.0.256"
+      ],
+      "optional": true,
+      "placeholder": "[PRIVATE IP REDACTED]"
+    },
+    {
+      "defaultEnabled": true,
+      "description": "Redacts tokens with a documented, prefix-identifiable format wherever they appear. A run longer than the minimum is redacted whole.",
+      "examples": [
+        {
+          "input": "key AKIAFAKEFAKEFAKE0000",
+          "output": "key [REDACTED]"
+        }
+      ],
+      "id": "SR-007",
+      "limitations": [
+        "Only the formats listed are recognized; high-entropy strings without a known prefix need a named key."
+      ],
+      "name": "Known credential formats",
+      "nonExamples": [
+        "AKIA-not-a-key",
+        "ghp_short"
+      ],
+      "optional": false,
+      "placeholder": "[REDACTED]"
+    },
+    {
+      "defaultEnabled": true,
+      "description": "Redacts the body of PEM and OpenSSH private-key blocks, multi-line or escaped on one line, keeping the armor lines and the line count.",
+      "examples": [
+        {
+          "input": "\"pem\": \"-----BEGIN PRIVATE KEY-----\\nFAKE\\n-----END PRIVATE KEY-----\"",
+          "output": "\"pem\": \"-----BEGIN PRIVATE KEY-----[PRIVATE KEY REDACTED]-----END PRIVATE KEY-----\""
+        }
+      ],
+      "id": "SR-008",
+      "limitations": [
+        "An unterminated block is redacted to the end of the input and reported with a warning.",
+        "PuTTY .ppk files and binary or base64-wrapped key containers are not covered."
+      ],
+      "name": "Private-key blocks",
+      "nonExamples": [
+        "-----BEGIN CERTIFICATE-----",
+        "-----BEGIN PUBLIC KEY-----"
+      ],
+      "optional": false,
+      "placeholder": "[PRIVATE KEY REDACTED]"
+    },
+    {
+      "defaultEnabled": true,
+      "description": "Redacts cookie values in Cookie and Set-Cookie fields, keeping cookie names and Set-Cookie attributes.",
+      "examples": [
+        {
+          "input": "Cookie: sid=fake; theme=dark",
+          "output": "Cookie: sid=[REDACTED]; theme=[REDACTED]"
+        },
+        {
+          "input": "Set-Cookie: sid=fake; Path=/; HttpOnly",
+          "output": "Set-Cookie: sid=[REDACTED]; Path=/; HttpOnly"
+        }
+      ],
+      "id": "SR-009",
+      "limitations": [
+        "Cookies passed in other fields are covered only when their key names a secret (SR-001)."
+      ],
+      "name": "Cookie values",
+      "nonExamples": [
+        "Cookie: sid=[REDACTED]"
+      ],
+      "optional": false,
+      "placeholder": "[REDACTED]"
+    }
+  ],
+  "schemaVersion": 1,
+  "sha256": "168d71feabe6c55ef378594064a9d987418d36edf91c16ca5e4a27fb99066cc3"
+}

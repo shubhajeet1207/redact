@@ -1,0 +1,26 @@
+{
+  "fixtures": [
+    {
+      "id": "FX-23b",
+      "description": "Re-running FX-23 output changes nothing",
+      "input": "-----BEGIN PRIVATE KEY-----\n[PRIVATE KEY REDACTED]\n\n\n-----END PRIVATE KEY-----\n",
+      "output": "-----BEGIN PRIVATE KEY-----\n[PRIVATE KEY REDACTED]\n\n\n-----END PRIVATE KEY-----\n",
+      "replacements": 0,
+      "lines": 5
+    },
+    {
+      "id": "RG-01-placeholders-with-spaces",
+      "input": "user=[EMAIL REDACTED] ip=[PRIVATE IP REDACTED] key=[PRIVATE KEY REDACTED]",
+      "output": "user=[EMAIL REDACTED] ip=[PRIVATE IP REDACTED] key=[PRIVATE KEY REDACTED]",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "RG-02-rerun-families",
+      "input": "password=[REDACTED] \"token\": \"[REDACTED]\" Authorization: Bearer [REDACTED] Cookie: a=[REDACTED]; b=[REDACTED]",
+      "output": "password=[REDACTED] \"token\": \"[REDACTED]\" Authorization: Bearer [REDACTED] Cookie: a=[REDACTED]; b=[REDACTED]",
+      "replacements": 0,
+      "lines": 1
+    }
+  ]
+}

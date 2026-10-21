@@ -1,0 +1,24 @@
+I1021 09:30:00.104512       1 main.go:58] Starting controller version=v1.8.2 commit=4c1e9b2
+I1021 09:30:00.211037       1 leaderelection.go:254] attempting to acquire leader lease kube-system/widget-controller...
+I1021 09:30:02.880143       1 leaderelection.go:268] successfully acquired lease kube-system/widget-controller
+{"level":"info","ts":"2026-10-21T09:30:05Z","logger":"reconciler","msg":"Reconciling","namespace":"payments","name":"api","generation":14}
+{"level":"info","ts":"2026-10-21T09:30:05Z","logger":"reconciler","msg":"Scaling deployment","replicas":3,"previous":2,"reason":"cpu>80%"}
+{"level":"warn","ts":"2026-10-21T09:30:07Z","logger":"reconciler","msg":"Readiness probe failed","pod":"api-7d9f8c6b5-x2kqp","statusCode":503}
+{"level":"error","ts":"2026-10-21T09:30:09Z","logger":"reconciler","msg":"Failed to update status","error":"Operation cannot be fulfilled on deployments.apps \"api\": the object has been modified; please apply your changes to the latest version and try again"}
+Events:
+  Type     Reason     Age   From               Message
+  ----     ------     ----  ----               -------
+  Normal   Scheduled  2m    default-scheduler  Successfully assigned payments/api-7d9f8c6b5-x2kqp to node-a3
+  Normal   Pulled     2m    kubelet            Container image "registry.example.com/payments/api:1.14.0" already present on machine
+  Warning  BackOff    41s   kubelet            Back-off restarting failed container api in pod api-7d9f8c6b5-x2kqp_payments(9c1f7e2a-4b3d-4e8f-a1c2-7d6e5f4a3b2c)
+NAME                          READY   STATUS             RESTARTS      AGE
+api-7d9f8c6b5-x2kqp           0/1     CrashLoopBackOff   4 (41s ago)   2m10s
+api-7d9f8c6b5-zt8wm           1/1     Running            0             14m
+Environment:
+  LOG_LEVEL:            info
+  MAX_TOKENS:           4096
+  TOKEN_TYPE:           bearer
+  SECRET_NAME:          payments-db
+  DATABASE_HOST:        db.payments.svc.cluster.local
+Mounts:
+  /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-8x2lq (ro)

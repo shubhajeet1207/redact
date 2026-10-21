@@ -1,0 +1,424 @@
+{
+  "fixtures": [
+    {
+      "id": "SR007-aws-access-key-id",
+      "inputBase64": "a2V5IEFLSUFGQUtFRkFLRUZBS0UwMDAw",
+      "output": "key [REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-aws-access-key-id-quoted",
+      "inputBase64": "InZhbHVlIjogIkFLSUFGQUtFRkFLRUZBS0UwMDAwIiw=",
+      "output": "\"value\": \"[REDACTED]\",",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-aws-temporary-key-id",
+      "inputBase64": "a2V5IEFTSUFGQUtFRkFLRUZBS0UwMDAw",
+      "output": "key [REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-aws-temporary-key-id-quoted",
+      "inputBase64": "InZhbHVlIjogIkFTSUFGQUtFRkFLRUZBS0UwMDAwIiw=",
+      "output": "\"value\": \"[REDACTED]\",",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-github-token-ghp",
+      "inputBase64": "a2V5IGdocF9hYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWE=",
+      "output": "key [REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-github-token-ghp-quoted",
+      "inputBase64": "InZhbHVlIjogImdocF9hYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWEiLA==",
+      "output": "\"value\": \"[REDACTED]\",",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-github-token-ghs",
+      "inputBase64": "a2V5IGdoc19aWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpa",
+      "output": "key [REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-github-token-ghs-quoted",
+      "inputBase64": "InZhbHVlIjogImdoc19aWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaIiw=",
+      "output": "\"value\": \"[REDACTED]\",",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-github-fine-grained-pat",
+      "inputBase64": "a2V5IGdpdGh1Yl9wYXRfYWFhYWFhYWFhYWFhYWFhYWFhYWFhYV9iYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYg==",
+      "output": "key [REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-github-fine-grained-pat-quoted",
+      "inputBase64": "InZhbHVlIjogImdpdGh1Yl9wYXRfYWFhYWFhYWFhYWFhYWFhYWFhYWFhYV9iYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYiIs",
+      "output": "\"value\": \"[REDACTED]\",",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-gitlab-token",
+      "inputBase64": "a2V5IGdscGF0LXh4eHh4eHh4eHh4eHh4eHh4eHh4",
+      "output": "key [REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-gitlab-token-quoted",
+      "inputBase64": "InZhbHVlIjogImdscGF0LXh4eHh4eHh4eHh4eHh4eHh4eHh4Iiw=",
+      "output": "\"value\": \"[REDACTED]\",",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-slack-bot-token",
+      "inputBase64": "a2V5IHhveGItMTIzNDU2Nzg5MC1hYmNkZWY=",
+      "output": "key [REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-slack-bot-token-quoted",
+      "inputBase64": "InZhbHVlIjogInhveGItMTIzNDU2Nzg5MC1hYmNkZWYiLA==",
+      "output": "\"value\": \"[REDACTED]\",",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-slack-app-token",
+      "inputBase64": "a2V5IHhhcHAtMTExMTExMTExMTEx",
+      "output": "key [REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-slack-app-token-quoted",
+      "inputBase64": "InZhbHVlIjogInhhcHAtMTExMTExMTExMTExIiw=",
+      "output": "\"value\": \"[REDACTED]\",",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-stripe-live-key",
+      "inputBase64": "a2V5IHNrX2xpdmVfYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh",
+      "output": "key [REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-stripe-live-key-quoted",
+      "inputBase64": "InZhbHVlIjogInNrX2xpdmVfYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhIiw=",
+      "output": "\"value\": \"[REDACTED]\",",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-stripe-restricted-key",
+      "inputBase64": "a2V5IHJrX3Rlc3RfYmJiYmJiYmJiYmJiYmJiYg==",
+      "output": "key [REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-stripe-restricted-key-quoted",
+      "inputBase64": "InZhbHVlIjogInJrX3Rlc3RfYmJiYmJiYmJiYmJiYmJiYiIs",
+      "output": "\"value\": \"[REDACTED]\",",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-stripe-webhook-secret",
+      "inputBase64": "a2V5IHdoc2VjX2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2Nj",
+      "output": "key [REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-stripe-webhook-secret-quoted",
+      "inputBase64": "InZhbHVlIjogIndoc2VjX2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjIiw=",
+      "output": "\"value\": \"[REDACTED]\",",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-google-api-key",
+      "inputBase64": "a2V5IEFJemFkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZA==",
+      "output": "key [REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-google-api-key-quoted",
+      "inputBase64": "InZhbHVlIjogIkFJemFkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZCIs",
+      "output": "\"value\": \"[REDACTED]\",",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-openai-project-key",
+      "inputBase64": "a2V5IHNrLXByb2otZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZQ==",
+      "output": "key [REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-openai-project-key-quoted",
+      "inputBase64": "InZhbHVlIjogInNrLXByb2otZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZSIs",
+      "output": "\"value\": \"[REDACTED]\",",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-anthropic-key",
+      "inputBase64": "a2V5IHNrLWFudC1hcGkwMy1mZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZm",
+      "output": "key [REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-anthropic-key-quoted",
+      "inputBase64": "InZhbHVlIjogInNrLWFudC1hcGkwMy1mZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmIiw=",
+      "output": "\"value\": \"[REDACTED]\",",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-huggingface-token",
+      "inputBase64": "a2V5IGhmX2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2c=",
+      "output": "key [REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-huggingface-token-quoted",
+      "inputBase64": "InZhbHVlIjogImhmX2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2ciLA==",
+      "output": "\"value\": \"[REDACTED]\",",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-npm-token",
+      "inputBase64": "a2V5IG5wbV9oaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGg=",
+      "output": "key [REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-npm-token-quoted",
+      "inputBase64": "InZhbHVlIjogIm5wbV9oaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGgiLA==",
+      "output": "\"value\": \"[REDACTED]\",",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-pypi-token",
+      "inputBase64": "a2V5IHB5cGktQWdFSWNIbHdhUzV2Y21jaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlp",
+      "output": "key [REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-pypi-token-quoted",
+      "inputBase64": "InZhbHVlIjogInB5cGktQWdFSWNIbHdhUzV2Y21jaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpIiw=",
+      "output": "\"value\": \"[REDACTED]\",",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-docker-pat",
+      "inputBase64": "a2V5IGRja3JfcGF0X2pqampqampqampqampqampqampqampqampqag==",
+      "output": "key [REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-docker-pat-quoted",
+      "inputBase64": "InZhbHVlIjogImRja3JfcGF0X2pqampqampqampqampqampqampqampqampqaiIs",
+      "output": "\"value\": \"[REDACTED]\",",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-sendgrid-key",
+      "inputBase64": "a2V5IFNHLmtra2tra2tra2tra2tra2tra2tra2subGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbA==",
+      "output": "key [REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-sendgrid-key-quoted",
+      "inputBase64": "InZhbHVlIjogIlNHLmtra2tra2tra2tra2tra2tra2tra2subGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbCIs",
+      "output": "\"value\": \"[REDACTED]\",",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-jwt-signed",
+      "inputBase64": "a2V5IGV5SmhiR2NpT2lKSVV6STFOaUo5LmV5SnpkV0lpT2lJeE1qTTBJbjAuYzJsblgzQmhjblF0WVdKag==",
+      "output": "key [REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-jwt-signed-quoted",
+      "inputBase64": "InZhbHVlIjogImV5SmhiR2NpT2lKSVV6STFOaUo5LmV5SnpkV0lpT2lJeE1qTTBJbjAuYzJsblgzQmhjblF0WVdKaiIs",
+      "output": "\"value\": \"[REDACTED]\",",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-jwt-unsigned",
+      "inputBase64": "a2V5IGV5SmhiR2NpT2lKdWIyNWxJbjAuZXlKemRXSWlPaUl4SW4wLg==",
+      "output": "key [REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "SR007-jwt-unsigned-quoted",
+      "inputBase64": "InZhbHVlIjogImV5SmhiR2NpT2lKdWIyNWxJbjAuZXlKemRXSWlPaUl4SW4wLiIs",
+      "output": "\"value\": \"[REDACTED]\",",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    }
+  ]
+}

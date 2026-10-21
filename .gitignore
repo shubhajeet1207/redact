@@ -1,0 +1,14 @@
+/target/
+/fuzz/target/
+/fuzz/corpus/
+/fuzz/artifacts/
+/fuzz/coverage/
+node_modules/
+/web/dist/
+*.profraw
+*.tmp
+.DS_Store
+Thumbs.db
+/web/wasm-pkg/
+/web/test-results/
+/web/playwright-report/

@@ -1,0 +1,300 @@
+{
+  "fixtures": [
+    {
+      "id": "FX-01",
+      "input": "password=fake-value",
+      "output": "password=[REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-001": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "FX-02",
+      "input": "{\"api_key\":\"fake-key\"}",
+      "output": "{\"api_key\":\"[REDACTED]\"}",
+      "replacements": 1,
+      "byRule": {
+        "SR-001": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "FX-03",
+      "input": "Authorization: Bearer fake-token",
+      "output": "Authorization: Bearer [REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-002": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "FX-04",
+      "input": "postgresql://app:fake-pass@db/app",
+      "output": "postgresql://app:[REDACTED]@db/app",
+      "replacements": 1,
+      "byRule": {
+        "SR-003": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "FX-05",
+      "input": "/home/alex/app/config.yml",
+      "output": "/home/[USER]/app/config.yml",
+      "replacements": 1,
+      "byRule": {
+        "SR-004": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "FX-06",
+      "input": "C:\\Users\\alex\\app.log",
+      "output": "C:\\Users\\[USER]\\app.log",
+      "replacements": 1,
+      "byRule": {
+        "SR-004": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "FX-07",
+      "input": "user=alex@example.com",
+      "output": "user=[EMAIL REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-005": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "FX-08",
+      "input": "user=alex@example.com",
+      "options": {
+        "email": false,
+        "privateIp": false
+      },
+      "output": "user=alex@example.com",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "FX-09",
+      "input": "host=10.0.0.8:5432",
+      "output": "host=10.0.0.8:5432",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "FX-10",
+      "input": "host=10.0.0.8:5432",
+      "options": {
+        "email": true,
+        "privateIp": true
+      },
+      "output": "host=[PRIVATE IP REDACTED]:5432",
+      "replacements": 1,
+      "byRule": {
+        "SR-006": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "FX-11",
+      "input": "password=alex@example.com",
+      "output": "password=[REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-001": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "FX-12",
+      "input": "password=[REDACTED]",
+      "output": "password=[REDACTED]",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "FX-13",
+      "input": "password_length=16",
+      "output": "password_length=16",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "FX-14",
+      "input": "host=172.32.0.1",
+      "options": {
+        "email": true,
+        "privateIp": true
+      },
+      "output": "host=172.32.0.1",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "FX-15",
+      "input": "DB_PASSWORD=fake",
+      "output": "DB_PASSWORD=[REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-001": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "FX-16",
+      "input": "\"clientSecret\": \"fake\"",
+      "output": "\"clientSecret\": \"[REDACTED]\"",
+      "replacements": 1,
+      "byRule": {
+        "SR-001": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "FX-17",
+      "input": "--password fake --verbose",
+      "output": "--password [REDACTED] --verbose",
+      "replacements": 1,
+      "byRule": {
+        "SR-001": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "FX-18",
+      "input": "Cookie: sid=fake; theme=dark",
+      "output": "Cookie: sid=[REDACTED]; theme=[REDACTED]",
+      "replacements": 2,
+      "byRule": {
+        "SR-009": 2
+      },
+      "lines": 1
+    },
+    {
+      "id": "FX-19",
+      "input": "Set-Cookie: sid=fake; Path=/; HttpOnly",
+      "output": "Set-Cookie: sid=[REDACTED]; Path=/; HttpOnly",
+      "replacements": 1,
+      "byRule": {
+        "SR-009": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "FX-20",
+      "input": "remote: https://user:fake@git.example/r.git",
+      "output": "remote: https://user:[REDACTED]@git.example/r.git",
+      "replacements": 1,
+      "byRule": {
+        "SR-003": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "FX-21",
+      "input": "key AKIAFAKEFAKEFAKE0000",
+      "output": "key [REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "FX-22",
+      "input": "\"key_material\": \"-----BEGIN PRIVATE KEY-----\\nFAKE\\n-----END PRIVATE KEY-----\\n\"",
+      "output": "\"key_material\": \"-----BEGIN PRIVATE KEY-----[PRIVATE KEY REDACTED]-----END PRIVATE KEY-----\\n\"",
+      "replacements": 1,
+      "byRule": {
+        "SR-008": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "FX-23",
+      "input": "-----BEGIN PRIVATE KEY-----\nAAAA\nBBBB\nCCCC\n-----END PRIVATE KEY-----\n",
+      "output": "-----BEGIN PRIVATE KEY-----\n[PRIVATE KEY REDACTED]\n\n\n-----END PRIVATE KEY-----\n",
+      "replacements": 1,
+      "byRule": {
+        "SR-008": 1
+      },
+      "lines": 5
+    },
+    {
+      "id": "FX-24",
+      "input": "HOME=/home/alex",
+      "output": "HOME=/home/[USER]",
+      "replacements": 1,
+      "byRule": {
+        "SR-004": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "FX-25",
+      "input": "see https://example.com/home/about/",
+      "output": "see https://example.com/home/about/",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "FX-26",
+      "input": "addr=[fd12:3456::1]:443",
+      "options": {
+        "email": true,
+        "privateIp": true
+      },
+      "output": "addr=[[PRIVATE IP REDACTED]]:443",
+      "replacements": 1,
+      "byRule": {
+        "SR-006": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "FX-27",
+      "inputBase64": "//5wAGEAcwBzAHcAbwByAGQAPQBmAGEAawBlAA==",
+      "outputBase64": "//5wAGEAcwBzAHcAbwByAGQAPQBbAFIARQBEAEEAQwBUAEUARABdAA==",
+      "replacements": 1,
+      "byRule": {
+        "SR-001": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "FX-28",
+      "input": "token_type=Bearer max_tokens=10",
+      "output": "token_type=Bearer max_tokens=10",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "FX-29",
+      "input": "\"private_key\": \"-----BEGIN PRIVATE KEY-----\\nFAKE\\n-----END PRIVATE KEY-----\\n\"",
+      "output": "\"private_key\": \"[REDACTED]\"",
+      "replacements": 1,
+      "byRule": {
+        "SR-008": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "FX-30",
+      "description": "TRD v1.0 FX-15: the password-to-host @ is never read as an email",
+      "input": "postgresql://app:fake-pass@db.example/app",
+      "output": "postgresql://app:[REDACTED]@db.example/app",
+      "replacements": 1,
+      "byRule": {
+        "SR-003": 1
+      },
+      "lines": 1
+    }
+  ]
+}

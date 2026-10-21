@@ -1,0 +1,38 @@
+# Seeds for failure cases proptest has generated in the past. It is
+# automatically read and these particular cases re-run before any
+# novel cases are generated.
+#
+# It is recommended to check this file in to source control so that
+# everyone who runs the test benefits from these saved cases.
+cc 876d624140817f7f56d36e617c491d3ef7b2a4967a3107d8019e534975060345 # shrinks to input = "-----BEGIN PRIVATE KEY-----password=\npassword=", o = Options { email: false, private_ip: false }
+cc b86dbe428c1da0d961438c10420764029db6794698aafc88d0354f34bcef91ed # shrinks to input = "/Users/postgres://app:pw@db/x/home/alex/password=password=", o = Options { email: false, private_ip: false }
+cc 4c7593c3f44f6c5e53235c9151721b1335ae57a41876bd98842f94b40345f6d0 # shrinks to input = "-----BEGIN PRIVATE KEY-----password=\npassword=\n", o = Options { email: false, private_ip: false }
+cc b186db048dd1d7ae5626a63ddac06e046e34ad9119a17cc53fb0f1638cfade9a # shrinks to input = "/Users/Cookie: a=\"api_key\": \"Authorization: Bearer ", o = Options { email: false, private_ip: false }
+cc 355e391a4222b7c6c2dc1482f9efbc2031d3046ac9c453b58e32a023c8871e28 # shrinks to input = "-----BEGIN PRIVATE KEY-----password=\rpassword=\n", o = Options { email: false, private_ip: false }
+cc af7ba4459e4ea95f83a9943dbcdcd117a9057ee4f024a38701669b4b1c1f4391 # shrinks to input = "AKIAFAKEFAKEFAKE0000fd12:3456::1", o = Options { email: false, private_ip: true }
+cc 386711fa2b9e97f9fe4f8bbc7021eda9887de2e038a5ade40c8edf0048d8935f # shrinks to input = "Cookie: a='\"api_key\": \";", o = Options { email: false, private_ip: false }
+cc 80edeccd1da346f98c3b0a50d7d69b95d8da2b1c0907d4a52708e5a86703e29e # shrinks to input = "-----BEGIN PRIVATE KEY-----password=-----END PRIVATE KEY-----password=password=", o = Options { email: false, private_ip: false }
+cc 00618cea6d830b810944d20f8e30ee3f117a4fa7811d332b2b4502825380120b # shrinks to input = "-----BEGIN PRIVATE KEY-----\"api_key\": \"'-----END PRIVATE KEY-----password=Authorization: Bearer ", o = Options { email: false, private_ip: false }
+cc 796d49681055e056ec6680935f20385784eea6ed0e383597d1b65d4dd749cb31 # shrinks to input = "Cookie: a=DB_PASSWORD=';'", o = Options { email: false, private_ip: false }
+cc 1b315e097f967b9874d3c3cd20d18e00917b709835be245de8b7fa2b26e6ac07 # shrinks to input = "Cookie: a='\u{1b}[31m/Users/Authorization: Bearer ", o = Options { email: false, private_ip: false }
+cc 79bb8583c4a4fcd9f2c256ac57612655ce205e7aea6358c1e1a8f3187e4d1c56 # shrinks to input = "\"\"postgres://app:pw@db/x🙂alex@example.com\"C:\\Users\\alex\\", o = Options { email: false, private_ip: false }
+cc 4228d05df4d91fc662e3c06f8ec20d8b72799b9c4493c36162f20c59e2e760c1 # shrinks to input = "Authorization: Bearer https://,/home/alex/", o = Options { email: false, private_ip: false }
+cc 99256ffd782863e6e27ea341b911aac739bb0b8a0565eaa0ce6d36a308b06c60 # shrinks to input = "\"api_key\": \"-----BEGIN PRIVATE KEY-----\"api_key\": \"-----END PRIVATE KEY-----'", o = Options { email: false, private_ip: false }
+cc 7f13783aaa78c0876a6a337c26ea2e99dd9265167dede68696226dbaabc360aa # shrinks to input = "Authorization: Bearer https://\u{1b}[31m/home/alex/password=", o = Options { email: false, private_ip: false }
+cc 6fb4901eb7d1ee609c01683cd79333415756638f563316ada9b7534c30a0335a # shrinks to input = "Cookie: a=Authorization: Bearer \"api_key\": \";\"api_key\": \"password=", o = Options { email: false, private_ip: false }
+cc 05955a91932f9ad5e985b7364d0c800bb201d640bdb9aaf09163003b464b6d84 # shrinks to input = "Authorization: Bearer postgres://app:pw@db/x\u{1b}[31mhttps:///home/alex/", o = Options { email: false, private_ip: false }
+cc aeb5be013206e55aa98da070ce6b8d7a8049131843013fcdc720c109ca672b0c # shrinks to input = "Cookie: a=Set-Cookie: s=\"api_key\": \"\u{1b}[31m\"api_key\": \"", o = Options { email: false, private_ip: false }
+cc 845ba6feb434eab6ba0a4854819d4388e1e3f128f84a8aadd04809852f0a5eb3 # shrinks to input = "Authorization: Bearer postgres://app:pw@db/x[REDACTED]/home/alex/", o = Options { email: false, private_ip: false }
+cc 0453089e6ba428a6a532bcd476ec12e2b8bb1d38a4c5767bfb5c1ccd23c2460c # shrinks to input = "https://\"api_key\": \"'/Users/\"api_key\": \"", o = Options { email: false, private_ip: false }
+cc 17a164af6d686166fe9341eb17a3480ec452c2c598354996e9364815dff6186a # shrinks to input = "\"\"Cookie: a=-----BEGIN PRIVATE KEY-----;-----END PRIVATE KEY-----password=", o = Options { email: false, private_ip: false }
+cc 248c306d94082cc2e9faa46086c354af95440c7c9e122908217e64029d6574f8 # shrinks to input = "Set-Cookie: s=postgres://app:pw@db/x;/home/alex/", o = Options { email: false, private_ip: false }
+cc d57c22ebf3b5729fc99ae72ae36b5ac17ee6c1ce67a5bea81c3eca7e6d60c1ae # shrinks to input = "--password postgres://app:pw@db/x[C:\\Users\\alex\\", o = Options { email: false, private_ip: false }
+cc 9bb70a6d325661b4072498b752ef6d7090bb0d9571ebc97b2009777f1f75378d # shrinks to input = "Cookie: a=\"api_key\": \"-----BEGIN PRIVATE KEY----------END PRIVATE KEY-----'", o = Options { email: false, private_ip: false }
+cc 7f1f06cb402f251c18a1e4da37cc6b696c0bb9a067595293788568f2d925cff3 # shrinks to input = "password=postgres://app:pw@db/x[/home/alex/", o = Options { email: false, private_ip: false }
+cc e916c99f35c9b0f848be4891fa342a5c9882effd96445ea616583beb681b9bed # shrinks to input = "password=postgres://app:pw@db/x,=/home/alex/", o = Options { email: false, private_ip: false }
+cc 0349f68049c531e0ce9be57eeeea02db6c89b3802ddc9533269ffaacfb209ca8 # shrinks to input = "password=; b=ghp_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"https://10.0.0.8Set-Cookie: s=https://\"fd12:3456::1ghp_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/home/alex/", o = Options { email: false, private_ip: false }
+cc e2bc3290cc232b46dddc81fb4002a645a1c93ed5318a65832826bf1d733af6be # shrinks to input = "\"api_key\": \"-----BEGIN PRIVATE KEY----------END PRIVATE KEY-----'\"-----BEGIN PRIVATE KEY----------END PRIVATE KEY-----'", o = Options { email: false, private_ip: false }
+cc c4d74371e5674388615f8eb230195a919b634573641abafab9974a40b48c0ed5 # shrinks to input = "Cookie: a==;ghp_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaapassword=", o = Options { email: false, private_ip: false }
+cc 22ed662d29f031463428eaae9ef8dba1027d5ee965ee58d65d0649fa0dc53223 # shrinks to input = "fd12:3456::1alex@example.compassword=", o = Options { email: true, private_ip: true }
+cc 1f9db885c8cc699d955a707d534abb4f7a2095199677a7d0c2db8ba912429de9 # shrinks to input = "Set-Cookie: s=\";\"api_key\": \"password=", o = Options { email: false, private_ip: false }
+cc e1d4539b6c04a107c96f6c470e22c1ce059c7e7983be4d6495d7a0062eab3434 # shrinks to input = "Authorization: Bearer Set-Cookie: s==; b=Cookie: a==", o = Options { email: false, private_ip: false }

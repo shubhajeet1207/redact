@@ -1,0 +1,51 @@
+[package]
+name = "spymonk-redact-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2024"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+spymonk-redact-core = { path = "../crates/core" }
+spymonk-redact-rules = { path = "../crates/rules" }
+
+[[bin]]
+name = "sanitize_bytes"
+path = "fuzz_targets/sanitize_bytes.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "stream_split"
+path = "fuzz_targets/stream_split.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "codec"
+path = "fuzz_targets/codec.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "framer"
+path = "fuzz_targets/framer.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "manifest_validator"
+path = "fuzz_targets/manifest_validator.rs"
+test = false
+doc = false
+bench = false
+
+[workspace]
+members = ["."]

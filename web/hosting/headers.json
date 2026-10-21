@@ -1,0 +1,46 @@
+{
+  "$comment": "TRD §11.3 provider-neutral response headers. Rendered into the chosen host's configuration; the build embeds the page CSP as a meta tag (minus frame-ancestors) and scripts/serve.mjs applies these headers locally. Routes are matched in order; the first match wins.",
+  "routes": [
+    {
+      "match": ["/", "/index.html"],
+      "headers": {
+        "Content-Security-Policy": "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'none'; connect-src 'none'; worker-src 'self'; manifest-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; child-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; require-trusted-types-for 'script'; trusted-types spymonk-worker",
+        "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
+        "Cross-Origin-Opener-Policy": "same-origin",
+        "Cross-Origin-Embedder-Policy": "require-corp",
+        "Cross-Origin-Resource-Policy": "same-origin",
+        "Referrer-Policy": "no-referrer",
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "DENY",
+        "Permissions-Policy": "accelerometer=(), autoplay=(), bluetooth=(), browsing-topics=(), camera=(), clipboard-read=(), clipboard-write=(self), display-capture=(), encrypted-media=(), fullscreen=(), geolocation=(), gyroscope=(), hid=(), idle-detection=(), local-fonts=(), magnetometer=(), microphone=(), midi=(), payment=(), publickey-credentials-get=(), screen-wake-lock=(), serial=(), usb=(), xr-spatial-tracking=()",
+        "Cache-Control": "no-cache"
+      }
+    },
+    {
+      "match": ["/assets/worker-*.js"],
+      "headers": {
+        "Content-Security-Policy": "default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; connect-src 'none'; require-trusted-types-for 'script'; trusted-types 'none'",
+        "Cross-Origin-Embedder-Policy": "require-corp",
+        "Cross-Origin-Resource-Policy": "same-origin",
+        "X-Content-Type-Options": "nosniff",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "match": ["/assets/*"],
+      "headers": {
+        "Cross-Origin-Resource-Policy": "same-origin",
+        "X-Content-Type-Options": "nosniff",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "match": ["/*"],
+      "headers": {
+        "Cross-Origin-Resource-Policy": "same-origin",
+        "X-Content-Type-Options": "nosniff",
+        "Cache-Control": "no-cache"
+      }
+    }
+  ]
+}

@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="x-dns-prefetch-control" content="off">
+    <meta name="color-scheme" content="light dark">
+    <meta name="description" content="Redact passwords, tokens, keys, emails, and home-directory names from logs before you share them. Runs entirely in your browser; nothing is uploaded.">
+    <title>SpyMonk Redact</title>
+    <link rel="icon" href="./spymonk-mark.svg" type="image/svg+xml">
+  </head>
+  <body>
+    <a class="skip-link" href="#playground">Skip to the playground</a>
+
+    <div class="sky" aria-hidden="true">
+      <svg class="spark spark--a" viewBox="0 0 24 24"><path d="M12 1c.9 6.3 4.7 10.1 11 11-6.3.9-10.1 4.7-11 11-.9-6.3-4.7-10.1-11-11 6.3-.9 10.1-4.7 11-11Z"/></svg>
+      <svg class="spark spark--b" viewBox="0 0 24 24"><path d="M12 1c.9 6.3 4.7 10.1 11 11-6.3.9-10.1 4.7-11 11-.9-6.3-4.7-10.1-11-11 6.3-.9 10.1-4.7 11-11Z"/></svg>
+      <svg class="spark spark--c" viewBox="0 0 24 24"><path d="M12 1c.9 6.3 4.7 10.1 11 11-6.3.9-10.1 4.7-11 11-.9-6.3-4.7-10.1-11-11 6.3-.9 10.1-4.7 11-11Z"/></svg>
+      <svg class="spark spark--d" viewBox="0 0 24 24"><path d="M12 1c.9 6.3 4.7 10.1 11 11-6.3.9-10.1 4.7-11 11-.9-6.3-4.7-10.1-11-11 6.3-.9 10.1-4.7 11-11Z"/></svg>
+      <svg class="spark spark--e" viewBox="0 0 24 24"><path d="M12 1c.9 6.3 4.7 10.1 11 11-6.3.9-10.1 4.7-11 11-.9-6.3-4.7-10.1-11-11 6.3-.9 10.1-4.7 11-11Z"/></svg>
+      <span class="dot dot--a"></span><span class="dot dot--b"></span><span class="dot dot--c"></span><span class="dot dot--d"></span>
+    </div>
+
+    <header class="taskbar">
+      <a class="brand" href="#top" aria-label="SpyMonk Redact, back to top">
+        <img src="./spymonk-mark.svg" alt="" width="40" height="40">
+        <span class="brand__name">SpyMonk <span>Redact</span></span>
+      </a>
+      <nav aria-label="Sections">
+        <ul>
+          <li><a href="#playground">Playground</a></li>
+          <li><a href="#rules">Rules</a></li>
+          <li><a href="#install">Install</a></li>
+          <li><a href="#security">Security</a></li>
+          <li><a href="https://github.com/shubhajeet1207/redact" rel="noopener noreferrer">Repository</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" id="overview" aria-labelledby="overview-title">
+        <div class="win win--lilac hero__intro">
+          <div class="win__bar"><span class="win__controls" aria-hidden="true"><i class="c c--close"></i><i class="c c--min"></i><i class="c c--max"></i></span><span class="win__title">welcome.txt</span></div>
+          <div class="win__body">
+            <h1 id="overview-title">Redact secrets before you share a log.</h1>
+            <p class="lede">Paste a log, a config, or a stack trace. SpyMonk Redact replaces passwords, tokens, private keys, cookies, emails, and home-folder names with placeholders, and leaves the rest of every line untouched.</p>
+            <ul class="facts">
+              <li><strong>Local.</strong> The engine runs in your browser as WebAssembly. Nothing is uploaded.</li>
+              <li><strong>Exact.</strong> Only matched values change; line breaks, spacing, and encoding are kept byte for byte.</li>
+              <li><strong>Honest.</strong> Pattern matching misses what it cannot recognize. Always review before sharing.</li>
+            </ul>
+            <p class="actions"><a class="btn btn--primary" href="#playground">Open the playground</a><a class="btn" href="#rules">See what it finds</a></p>
+          </div>
+        </div>
+        <div class="win win--red hero__player" aria-hidden="true">
+          <div class="win__bar"><span class="win__controls"><i class="c c--close"></i><i class="c c--min"></i><i class="c c--max"></i></span><span class="win__title">spymonk.exe</span></div>
+          <div class="screen">
+            <img class="mascot" src="./spymonk-mark.svg" alt="" width="168" height="168">
+            <p class="screen__line"><span>password=</span><span class="ph">[REDACTED]</span></p>
+          </div>
+          <div class="player">
+            <div class="segments segments--full"></div>
+            <p class="player__caption">redacting… 100% local</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="playground" class="section" aria-labelledby="playground-title" tabindex="-1">
+        <div class="win win--red">
+          <div class="win__bar"><span class="win__controls" aria-hidden="true"><i class="c c--close"></i><i class="c c--min"></i><i class="c c--max"></i></span><h2 class="win__title" id="playground-title">playground.exe</h2></div>
+          <div class="win__body">
+            <div class="tabs" role="tablist" aria-label="Input mode">
+              <button class="tab" role="tab" type="button" id="tab-paste" aria-controls="panel-paste" aria-selected="true">Paste text</button>
+              <button class="tab" role="tab" type="button" id="tab-file" aria-controls="panel-file" aria-selected="false" tabindex="-1">Sanitize a file</button>
+            </div>
+
+            <div class="tabpanel" role="tabpanel" id="panel-paste" aria-labelledby="tab-paste">
+              <div class="toolbar">
+                <div class="toolbar__group">
+                  <label for="sample">Sample</label>
+                  <select id="sample"></select>
+                  <button class="btn" type="button" id="load-sample">Load</button>
+                </div>
+                <fieldset class="toolbar__group toggles">
+                  <legend class="visually-hidden">Options</legend>
+                  <label class="check"><input type="checkbox" id="opt-email" checked> Emails</label>
+                  <label class="check"><input type="checkbox" id="opt-ip"> Private IPs</label>
+                  <label class="check"><input type="checkbox" id="opt-badges" checked> Show hidden characters</label>
+                </fieldset>
+              </div>
+              <div class="panes">
+                <div class="pane">
+                  <label class="pane__label" for="paste-input">Input</label>
+                  <textarea id="paste-input" class="field" rows="14" autocomplete="off" spellcheck="false" autocapitalize="off" autocorrect="off" translate="no" data-gramm="false" data-gramm_editor="false" data-enable-grammarly="false" aria-describedby="paste-hint" disabled></textarea>
+                  <p class="hint" id="paste-hint">Up to 1 MiB. Your text stays on this device.</p>
+                </div>
+                <div class="pane">
+                  <span class="pane__label" id="paste-output-label">Sanitized output</span>
+                  <div id="paste-output" class="output" role="region" aria-labelledby="paste-output-label" tabindex="0" translate="no"></div>
+                  <p class="hint" id="paste-notice" hidden></p>
+                </div>
+              </div>
+              <div class="actions">
+                <button class="btn btn--primary" type="button" id="copy" disabled>Copy output</button>
+                <button class="btn" type="button" id="clear">Clear</button>
+              </div>
+              <div class="statusbar">
+                <p id="paste-status"></p>
+                <p id="paste-live" class="visually-hidden" role="status" aria-live="polite"></p>
+                <p id="paste-hidden" class="statusbar__warn" hidden></p>
+              </div>
+              <details class="report" id="paste-report">
+                <summary>Report</summary>
+                <div class="report__body"></div>
+              </details>
+            </div>
+
+            <div class="tabpanel" role="tabpanel" id="panel-file" aria-labelledby="tab-file" hidden>
+              <div class="dropzone" id="dropzone">
+                <svg class="folder" viewBox="0 0 64 48" aria-hidden="true"><path d="M3 9h20l5 6h33v30H3Z"/><path d="M3 15h58"/></svg>
+                <p>Drop a file here, or</p>
+                <input type="file" id="file-input" class="visually-hidden">
+                <label class="btn btn--primary" for="file-input">Choose a file</label>
+                <p class="hint">Read and sanitized on this device. Nothing is uploaded.</p>
+              </div>
+              <div class="toolbar">
+                <fieldset class="toolbar__group toggles">
+                  <legend class="visually-hidden">File options</legend>
+                  <label class="check"><input type="checkbox" id="file-opt-email" checked> Emails</label>
+                  <label class="check"><input type="checkbox" id="file-opt-ip"> Private IPs</label>
+                </fieldset>
+                <div class="toolbar__group">
+                  <label for="file-line-limit">Longest line</label>
+                  <select id="file-line-limit">
+                    <option value="1048576" selected>1 MiB</option>
+                    <option value="4194304">4 MiB</option>
+                    <option value="16777216">16 MiB</option>
+                    <option value="67108864">64 MiB</option>
+                  </select>
+                </div>
+                <fieldset class="toolbar__group" id="sink-choice">
+                  <legend>Output</legend>
+                  <label class="radio"><input type="radio" name="sink" value="handle" id="sink-handle"> Stream to a file I choose</label>
+                  <label class="radio"><input type="radio" name="sink" value="blob" id="sink-blob" checked> Keep in memory, then save (up to 1 GiB)</label>
+                </fieldset>
+              </div>
+              <div class="progress-row">
+                <div class="progress" id="file-progress" role="progressbar" aria-label="File progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progress__fill segments"></div></div>
+                <button class="btn" type="button" id="file-cancel" disabled>Cancel</button>
+              </div>
+              <div class="statusbar">
+                <p id="file-status"></p>
+                <p id="file-live" class="visually-hidden" role="status" aria-live="polite"></p>
+                <p id="file-warn" class="statusbar__warn" hidden></p>
+              </div>
+              <div class="actions">
+                <a class="btn btn--primary" id="file-save" hidden>Save sanitized file</a>
+                <button class="btn" type="button" id="file-copy" disabled>Copy output</button>
+                <button class="btn" type="button" id="file-clear">Clear</button>
+              </div>
+              <p class="hint" id="file-save-note" hidden></p>
+              <div class="pane">
+                <span class="pane__label" id="file-preview-label">Preview</span>
+                <div id="file-preview" class="output output--short" role="region" aria-labelledby="file-preview-label" tabindex="0" translate="no"></div>
+                <p class="hint" id="file-preview-note" hidden></p>
+              </div>
+              <details class="report" id="file-report">
+                <summary>Report</summary>
+                <div class="report__body"></div>
+              </details>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="rules" class="section" aria-labelledby="rules-title">
+        <div class="win win--lilac">
+          <div class="win__bar"><span class="win__controls" aria-hidden="true"><i class="c c--close"></i><i class="c c--min"></i><i class="c c--max"></i></span><h2 class="win__title" id="rules-title">rules</h2></div>
+          <div class="win__body">
+            <!-- @rules -->
+          </div>
+        </div>
+      </section>
+
+      <section id="install" class="section" aria-labelledby="install-title">
+        <div class="win win--tan">
+          <div class="win__bar"><span class="win__controls" aria-hidden="true"><i class="c c--close"></i><i class="c c--min"></i><i class="c c--max"></i></span><h2 class="win__title" id="install-title">install &amp; verify</h2></div>
+          <div class="win__body prose">
+            <div class="callout" role="note">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v8M12 17.5v.5"/></svg>
+              <p><strong>Not released yet.</strong> No package, archive, or container image has been published. Do not install anything named <code>spymonk-redact</code> from a registry until a signed release appears in the repository.</p>
+            </div>
+            <h3>Planned channels</h3>
+            <ul>
+              <li><strong>pip, pipx, or uv</strong>: a wheel that carries the native command-line binary.</li>
+              <li><strong>Standalone archives</strong> for Windows, macOS, and Linux on x86-64 and ARM64.</li>
+              <li><strong>A container image</strong> with a pinned digest.</li>
+              <li><strong>This playground</strong>, plus an offline bundle you can serve from your own machine.</li>
+            </ul>
+            <h3>How you will verify a release</h3>
+            <p>Every artifact will ship with a checksum, Sigstore-signed build provenance, and a software bill of materials. You will check provenance with <code>gh attestation verify</code>, compare checksums with <code>sha256sum --check</code>, and confirm that <code>spymonk-redact --version</code> prints the rule-set hash listed in the release notes. This page’s rule set is <code class="hash">%RULES_SHA256%</code>.</p>
+            <h3>Build from source</h3>
+<pre class="code"><code>git clone https://github.com/shubhajeet1207/redact
+cd redact
+cargo test --workspace --locked
+cd web &amp;&amp; npm ci --ignore-scripts &amp;&amp; npm run build</code></pre>
+            <p>The build needs the Rust toolchain pinned in <code>rust-toolchain.toml</code>, <code>wasm-bindgen-cli</code> 0.2.129, and Node.js 22.13 or later.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="security" class="section" aria-labelledby="security-title">
+        <div class="win win--tan">
+          <div class="win__bar"><span class="win__controls" aria-hidden="true"><i class="c c--close"></i><i class="c c--min"></i><i class="c c--max"></i></span><h2 class="win__title" id="security-title">security &amp; privacy</h2></div>
+          <div class="win__body prose columns">
+            <div>
+              <h3>What this page does with your data</h3>
+              <ul>
+                <li>Pasted text and chosen files are processed in this browser tab and never leave the device.</li>
+                <li>No cookies, no browser storage, no analytics, and no third-party resources. Your input never appears in a URL.</li>
+                <li>The page’s policy forbids network connections from both the page and the engine.</li>
+                <li>Leaving the page clears the editor, the output, and the engine.</li>
+                <li>The web host still sees ordinary request details, such as your IP address and browser, in its access logs.</li>
+              </ul>
+            </div>
+            <div>
+              <h3>What it cannot do</h3>
+              <ul>
+                <li>It finds only what its rules recognize. High-entropy strings without a key or known prefix, credentials split across lines, and personal names are not detected.</li>
+                <li>Redaction does not undo a disclosure. Rotate any credential that was already exposed.</li>
+                <li>Each visit trusts the host to deliver unmodified code. For sensitive material, use the command-line tool or the verified offline bundle.</li>
+                <li>Browser extensions can read pages; they are outside the tool’s control.</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Report a problem</h3>
+              <p>Report vulnerabilities privately through the repository’s <a href="https://github.com/shubhajeet1207/redact/security/advisories/new" rel="noopener noreferrer">security advisories</a>. The contact details are also in <a href="./.well-known/security.txt">security.txt</a>. Never include real credentials or logs: reproduce with synthetic values.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <img src="./spymonk-mark.svg" alt="" width="28" height="28">
+      <p>SpyMonk Redact <code>%TOOL_VERSION%</code> · rules <code>%RULES_VERSION%</code> · <span title="Rule-set SHA-256: %RULES_SHA256%">hash <code>%RULES_SHA256_SHORT%</code></span> · commit <code>%COMMIT%</code> · Apache-2.0</p>
+    </footer>
+
+    <dialog class="win win--red dialog" id="confirm-sample" aria-labelledby="confirm-sample-title">
+      <div class="win__bar"><span class="win__controls" aria-hidden="true"><i class="c c--close"></i></span><h2 class="win__title" id="confirm-sample-title">replace input?</h2></div>
+      <div class="win__body">
+        <img class="dialog__mascot" src="./spymonk-mark.svg" alt="" width="56" height="56">
+        <p>Replace your edited input with the sample?</p>
+        <div class="actions">
+          <button class="btn btn--primary" type="button" data-choice="replace">Replace</button>
+          <button class="btn" type="button" data-choice="cancel" autofocus>Cancel</button>
+        </div>
+      </div>
+    </dialog>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

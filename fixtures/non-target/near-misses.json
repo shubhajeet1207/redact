@@ -1,0 +1,549 @@
+{
+  "fixtures": [
+    {
+      "id": "NT-01",
+      "input": "password_length=16",
+      "output": "password_length=16",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-02",
+      "input": "token_type=Bearer max_tokens=10",
+      "output": "token_type=Bearer max_tokens=10",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-03",
+      "input": "passwordHint=abc",
+      "output": "passwordHint=abc",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-04",
+      "input": "secret_name=prod",
+      "output": "secret_name=prod",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-05",
+      "input": "mypassword=x",
+      "output": "mypassword=x",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-06",
+      "input": "password=null",
+      "output": "password=null",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-07",
+      "input": "token: true",
+      "output": "token: true",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-08",
+      "input": "\"password\": null",
+      "output": "\"password\": null",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-09",
+      "input": "password=",
+      "output": "password=",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-10",
+      "input": "\"password\": \"\"",
+      "output": "\"password\": \"\"",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-11",
+      "input": "if password == other",
+      "output": "if password == other",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-12",
+      "input": "password != x",
+      "output": "password != x",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-13",
+      "input": "tokens: [a, b]",
+      "output": "tokens: [a, b]",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-14",
+      "input": "credentials: {",
+      "output": "credentials: {",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-15",
+      "input": "--password --verbose",
+      "output": "--password --verbose",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-16",
+      "input": "--token-file path",
+      "output": "--token-file path",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-17",
+      "input": "-pSECRET db",
+      "output": "-pSECRET db",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-18",
+      "input": "Authorization: [REDACTED]",
+      "output": "Authorization: [REDACTED]",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-19",
+      "input": "Authorization: Bearer [REDACTED]",
+      "output": "Authorization: Bearer [REDACTED]",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-20",
+      "input": "Cookie: sid=[REDACTED]",
+      "output": "Cookie: sid=[REDACTED]",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-21",
+      "input": "Cookie:",
+      "output": "Cookie:",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-22",
+      "input": "https://user@host/path",
+      "output": "https://user@host/path",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-23",
+      "input": "https://host:8443/path",
+      "output": "https://host:8443/path",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-24",
+      "input": "https://a:b/c@d",
+      "output": "https://a:b/c@d",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-25",
+      "input": "alex@localhost",
+      "output": "alex@localhost",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-26",
+      "input": "user@host/path",
+      "output": "user@host/path",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-27",
+      "input": "a..b@example.com",
+      "output": "a..b@example.com",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-28",
+      "input": "x@y@example.com",
+      "output": "x@y@example.com",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-29",
+      "input": "alex@example.c0m",
+      "output": "alex@example.c0m",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-30",
+      "input": "see https://example.com/home/about/",
+      "output": "see https://example.com/home/about/",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-31",
+      "input": "/home/1001/",
+      "output": "/home/1001/",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-32",
+      "input": "/home//x",
+      "output": "/home//x",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-33",
+      "input": "/homes/alex/",
+      "output": "/homes/alex/",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-34",
+      "input": "AB:\\Users\\alex\\",
+      "output": "AB:\\Users\\alex\\",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-35",
+      "input": "AKIA-not-a-key",
+      "output": "AKIA-not-a-key",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-36",
+      "input": "AKIAFAKEFAKEFAKE00001",
+      "output": "AKIAFAKEFAKEFAKE00001",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-37",
+      "input": "ghp_short",
+      "output": "ghp_short",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-38",
+      "input": "xghp_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "output": "xghp_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-39",
+      "input": "AIzadddddddddddddddddddddddddddddddddd",
+      "output": "AIzadddddddddddddddddddddddddddddddddd",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-40",
+      "input": "AIzadddddddddddddddddddddddddddddddddddd",
+      "output": "AIzadddddddddddddddddddddddddddddddddddd",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-41",
+      "input": "npm_hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
+      "output": "npm_hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-42",
+      "input": "xoxb-short",
+      "output": "xoxb-short",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-43",
+      "input": "eyJabc",
+      "output": "eyJabc",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-44",
+      "input": "eyJhbGciOiJIUzI1NiJ9",
+      "output": "eyJhbGciOiJIUzI1NiJ9",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-45",
+      "input": "sk-not-a-key",
+      "output": "sk-not-a-key",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-46",
+      "input": "-----BEGIN CERTIFICATE-----",
+      "output": "-----BEGIN CERTIFICATE-----",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-47",
+      "input": "-----BEGIN PUBLIC KEY-----",
+      "output": "-----BEGIN PUBLIC KEY-----",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-48",
+      "input": "[REDACTED] [USER] [EMAIL REDACTED] [PRIVATE IP REDACTED] [PRIVATE KEY REDACTED]",
+      "output": "[REDACTED] [USER] [EMAIL REDACTED] [PRIVATE IP REDACTED] [PRIVATE KEY REDACTED]",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-IP-01",
+      "input": "host=172.32.0.1",
+      "options": {
+        "email": true,
+        "privateIp": true
+      },
+      "output": "host=172.32.0.1",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-IP-02",
+      "input": "110.0.0.1",
+      "options": {
+        "email": true,
+        "privateIp": true
+      },
+      "output": "110.0.0.1",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-IP-03",
+      "input": "10.0.0.256",
+      "options": {
+        "email": true,
+        "privateIp": true
+      },
+      "output": "10.0.0.256",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-IP-04",
+      "input": "1.10.0.0.1",
+      "options": {
+        "email": true,
+        "privateIp": true
+      },
+      "output": "1.10.0.0.1",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-IP-05",
+      "input": "10.0.0.1.5",
+      "options": {
+        "email": true,
+        "privateIp": true
+      },
+      "output": "10.0.0.1.5",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-IP-06",
+      "input": "10.00.0.1",
+      "options": {
+        "email": true,
+        "privateIp": true
+      },
+      "output": "10.00.0.1",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-IP-07",
+      "input": "v10.0.0.1",
+      "options": {
+        "email": true,
+        "privateIp": true
+      },
+      "output": "v10.0.0.1",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-IP-08",
+      "input": "8.8.8.8",
+      "options": {
+        "email": true,
+        "privateIp": true
+      },
+      "output": "8.8.8.8",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-IP-09",
+      "input": "127.0.0.1",
+      "options": {
+        "email": true,
+        "privateIp": true
+      },
+      "output": "127.0.0.1",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-IP-10",
+      "input": "169.254.1.1",
+      "options": {
+        "email": true,
+        "privateIp": true
+      },
+      "output": "169.254.1.1",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-IP-11",
+      "input": "100.64.0.1",
+      "options": {
+        "email": true,
+        "privateIp": true
+      },
+      "output": "100.64.0.1",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-IP-12",
+      "input": "fe80::1",
+      "options": {
+        "email": true,
+        "privateIp": true
+      },
+      "output": "fe80::1",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-IP-13",
+      "input": "2001:db8::1",
+      "options": {
+        "email": true,
+        "privateIp": true
+      },
+      "output": "2001:db8::1",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-IP-14",
+      "input": "fdisk -l",
+      "options": {
+        "email": true,
+        "privateIp": true
+      },
+      "output": "fdisk -l",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-IP-15",
+      "input": "sha fd3a9b4c",
+      "options": {
+        "email": true,
+        "privateIp": true
+      },
+      "output": "sha fd3a9b4c",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-IP-16",
+      "input": "fd12:34:56",
+      "options": {
+        "email": true,
+        "privateIp": true
+      },
+      "output": "fd12:34:56",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-IP-17",
+      "input": "fd00:::1",
+      "options": {
+        "email": true,
+        "privateIp": true
+      },
+      "output": "fd00:::1",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-IP-18",
+      "input": "fd00::1::2",
+      "options": {
+        "email": true,
+        "privateIp": true
+      },
+      "output": "fd00::1::2",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "NT-IP-19",
+      "input": "ffd0::1",
+      "options": {
+        "email": true,
+        "privateIp": true
+      },
+      "output": "ffd0::1",
+      "replacements": 0,
+      "lines": 1
+    }
+  ]
+}

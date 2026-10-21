@@ -1,0 +1,83 @@
+name: Fuzz
+
+# TRD §19.4: time-boxed on every pull request, longer nightly. Findings fail the job and print the
+# crashing input (base64) so it can be added as a regression fixture.
+on:
+  pull_request:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: fuzz-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  # A dated nightly keeps fuzz builds reproducible; bump it deliberately.
+  FUZZ_TOOLCHAIN: nightly-2026-10-01
+  CARGO_FUZZ_VERSION: 0.12.0
+
+jobs:
+  fuzz:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [sanitize_bytes, stream_split, codec, framer, manifest_validator]
+    steps:
+      - uses: step-security/harden-runner@dc2769abcc0fcfbadfc1df54081c1608579ef6b2 # v2.22.2
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install toolchain and cargo-fuzz
+        run: |
+          rustup toolchain install "$FUZZ_TOOLCHAIN" --profile minimal
+          cargo +"$FUZZ_TOOLCHAIN" install cargo-fuzz --locked --version "$CARGO_FUZZ_VERSION"
+      - name: Seed corpus from fixtures
+        run: |
+          mkdir -p fuzz/corpus/${{ matrix.target }}
+          if [ "${{ matrix.target }}" = manifest_validator ]; then
+            cp rules/rules.v1.json fuzz/corpus/manifest_validator/rules.v1.json
+          else
+            python3 -I - fuzz/corpus/${{ matrix.target }} <<'PY'
+          import base64, glob, json, os, sys
+          out, n = sys.argv[1], 0
+          for f in sorted(glob.glob("fixtures/**/*.json", recursive=True)):
+              for fx in json.load(open(f, encoding="utf-8")).get("fixtures", []):
+                  if "inputBase64" in fx:
+                      data = base64.b64decode(fx["inputBase64"])
+                  else:
+                      data = fx.get("input", "").encode()
+                  open(os.path.join(out, f"seed-{n:04d}"), "wb").write(b"\0" + data)
+                  n += 1
+          for f in sorted(glob.glob("fixtures/benign/*.log")):
+              open(os.path.join(out, f"seed-{n:04d}"), "wb").write(b"\1" + open(f, "rb").read())
+              n += 1
+          PY
+          fi
+      - name: Fuzz
+        env:
+          SECONDS_PER_TARGET: ${{ github.event_name == 'pull_request' && '120' || '1800' }}
+        run: |
+          # cargo-fuzz builds optimized with debug assertions; the lockfile must be current.
+          cargo +"$FUZZ_TOOLCHAIN" fetch --locked --manifest-path fuzz/Cargo.toml
+          cargo +"$FUZZ_TOOLCHAIN" fuzz run ${{ matrix.target }} \
+            fuzz/corpus/${{ matrix.target }} -- \
+            -max_total_time="$SECONDS_PER_TARGET" -timeout=10 -rss_limit_mb=512 -max_len=65536
+      - name: Print crashing inputs
+        if: failure()
+        run: |
+          for f in fuzz/artifacts/${{ matrix.target }}/*; do
+            [ -f "$f" ] || continue
+            echo "::group::$f"
+            base64 -w0 "$f"
+            echo
+            echo "::endgroup::"
+          done

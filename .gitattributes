@@ -1,0 +1,6 @@
+* text=auto eol=lf
+# Golden fixtures and test corpora are byte-exact test data (CRLF, lone CR, BOMs, UTF-16).
+fixtures/** -text
+*.png binary
+*.jpg binary
+*.wasm binary

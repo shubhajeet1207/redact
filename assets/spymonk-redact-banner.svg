@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="600" viewBox="0 0 1600 600" role="img" aria-labelledby="title desc">
+  <title id="title">SpyMonk Redact — Sanitize before you share.</title>
+  <desc id="desc">A graphite, coral, and teal technical banner showing local developer input flowing through a redaction engine into reviewable output. The artwork is vector-based.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#171427"/><stop offset="1" stop-color="#0d111d"/></linearGradient>
+    <radialGradient id="warm-light"><stop stop-color="#f05b43" stop-opacity=".13"/><stop offset="1" stop-color="#f05b43" stop-opacity="0"/></radialGradient>
+    <radialGradient id="cool-light"><stop stop-color="#83d5ce" stop-opacity=".1"/><stop offset="1" stop-color="#83d5ce" stop-opacity="0"/></radialGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#282337"/><stop offset="1" stop-color="#171525"/></linearGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#b9b3c9" stroke-opacity=".055"/></pattern>
+    <pattern id="dots" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="#b9b3c9" opacity=".18"/></pattern>
+    <marker id="arrow-coral" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="m1 1 5 3-5 3" fill="none" stroke="#ef8d7b" stroke-width="1.4"/></marker>
+    <marker id="arrow-teal" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="m1 1 5 3-5 3" fill="none" stroke="#83d5ce" stroke-width="1.4"/></marker>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#06050c" flood-opacity=".45"/></filter>
+  </defs>
+
+  <rect width="1600" height="600" rx="24" fill="url(#background)"/>
+  <rect x="1" y="1" width="1598" height="598" rx="23" fill="url(#grid)" stroke="#373043"/>
+  <ellipse cx="1140" cy="186" rx="520" ry="330" fill="url(#warm-light)"/>
+  <ellipse cx="1450" cy="420" rx="245" ry="210" fill="url(#cool-light)"/>
+
+  <g font-family="'Segoe UI', Arial, sans-serif">
+    <g transform="translate(80 48)" stroke="#f5806a" stroke-width="2" fill="none" stroke-linejoin="round"><path d="m0 12 16-9 16 9-16 9Z"/><path d="m0 21 16 9 16-9M0 30l16 9 16-9"/></g>
+    <text x="130" y="76" fill="#c5bccf" font-family="Consolas, monospace" font-size="16" letter-spacing="3">LOCAL-FIRST DEVELOPER SAFETY</text>
+    <text x="1520" y="76" text-anchor="end" fill="#b8afc4" font-family="Consolas, monospace" font-size="14" letter-spacing="2">REVIEW BEFORE YOU SHARE</text>
+    <text x="76" y="205" fill="#fff4e7" font-size="100" font-weight="700" letter-spacing="-5">SpyMonk</text>
+    <text x="81" y="269" fill="#f5806a" font-size="49" font-weight="400" letter-spacing="1">Redact</text>
+    <text x="82" y="337" fill="#fff4e7" font-size="28" font-weight="600">Sanitize before you share.</text>
+    <text x="82" y="375" fill="#bdb5cc" font-size="28">Preserve the context.</text>
+    <g transform="translate(82 419)" font-family="Consolas, monospace" font-size="15"><rect width="154" height="36" rx="8" fill="#252133" stroke="#494052"/><text x="77" y="24" text-anchor="middle" fill="#e4d9ec">LOCAL ONLY</text><rect x="168" width="149" height="36" rx="8" fill="#252133" stroke="#494052"/><text x="242.5" y="24" text-anchor="middle" fill="#e4d9ec">NO TELEMETRY</text><rect x="331" width="139" height="36" rx="8" fill="#252133" stroke="#494052"/><text x="400.5" y="24" text-anchor="middle" fill="#e4d9ec">CLI + WEB</text></g>
+
+    <!-- Abstract local data flow: input never leaves the device. -->
+    <g transform="translate(720 128)" filter="url(#shadow)">
+      <path d="M193 117h57q20 0 20 20v30q0 20 20 20h38" fill="none" stroke="#ef8d7b" stroke-width="2" marker-end="url(#arrow-coral)"/><path d="M193 295h57q20 0 20-20v-51q0-20 20-20h38" fill="none" stroke="#ef8d7b" stroke-width="2" marker-end="url(#arrow-coral)"/><path d="M499 205h31" fill="none" stroke="#83d5ce" stroke-width="2" marker-end="url(#arrow-teal)"/>
+      <g transform="translate(0 58)"><rect width="194" height="118" rx="12" fill="url(#panel)" stroke="#51495f"/><rect width="194" height="31" rx="12" fill="#322a42"/><path d="M0 31h194" stroke="#51495f"/><circle cx="18" cy="16" r="5" fill="#f5806a"/><circle cx="35" cy="16" r="5" fill="#f0bc6a"/><circle cx="52" cy="16" r="5" fill="#83d5ce"/><text x="72" y="21" fill="#d7cfdf" font-family="Consolas, monospace" font-size="12">INPUT.LOG</text><text x="16" y="61" fill="#bdb5cc" font-family="Consolas, monospace" font-size="12">token=sk_live_••••</text><text x="16" y="83" fill="#bdb5cc" font-family="Consolas, monospace" font-size="12">user=alex@example.dev</text><text x="16" y="105" fill="#bdb5cc" font-family="Consolas, monospace" font-size="12">/home/alex/service</text></g>
+      <g transform="translate(0 236)"><rect width="194" height="118" rx="12" fill="url(#panel)" stroke="#51495f"/><rect width="194" height="31" rx="12" fill="#322a42"/><path d="M0 31h194" stroke="#51495f"/><circle cx="18" cy="16" r="5" fill="#f5806a"/><circle cx="35" cy="16" r="5" fill="#f0bc6a"/><circle cx="52" cy="16" r="5" fill="#83d5ce"/><text x="72" y="21" fill="#d7cfdf" font-family="Consolas, monospace" font-size="12">CONFIG.YML</text><text x="16" y="61" fill="#bdb5cc" font-family="Consolas, monospace" font-size="12">db_password: •••••••</text><text x="16" y="83" fill="#bdb5cc" font-family="Consolas, monospace" font-size="12">Cookie: sid=••••••</text><text x="16" y="105" fill="#bdb5cc" font-family="Consolas, monospace" font-size="12">Authorization: Bearer •••</text></g>
+      <g transform="translate(270 82)"><circle cx="118" cy="122" r="111" fill="#1b1728" stroke="#f5806a" stroke-width="2"/><circle cx="118" cy="122" r="93" fill="url(#dots)" stroke="#51495f"/><path d="M118 48c-28 0-51 23-51 51v32c0 28 23 51 51 51s51-23 51-51V99c0-28-23-51-51-51Z" fill="#2a2437" stroke="#83d5ce" stroke-width="2"/><path d="M92 113h52M92 133h52M104 93h28M104 153h28" stroke="#f5806a" stroke-width="4" stroke-linecap="round"/><path d="m167 58 19-19M50 196l19-19M50 58l19 19M167 196l19-19" stroke="#83d5ce" stroke-width="3" stroke-linecap="round"/><text x="118" y="240" text-anchor="middle" fill="#fff4e7" font-family="Consolas, monospace" font-size="14" letter-spacing="2">REDACTION ENGINE</text></g>
+      <g transform="translate(530 110)"><rect width="244" height="190" rx="12" fill="url(#panel)" stroke="#83d5ce"/><rect width="244" height="34" rx="12" fill="#21403f"/><path d="M0 34h244" stroke="#4d7671"/><path d="m17 17 5 5 10-11" fill="none" stroke="#83d5ce" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><text x="42" y="22" fill="#e3f2ed" font-family="Consolas, monospace" font-size="12">OUTPUT.TXT</text><text x="16" y="67" fill="#d5cddd" font-family="Consolas, monospace" font-size="12">token=[REDACTED]</text><text x="16" y="91" fill="#d5cddd" font-family="Consolas, monospace" font-size="12">user=[EMAIL REDACTED]</text><text x="16" y="115" fill="#d5cddd" font-family="Consolas, monospace" font-size="12">/home/[USER]/service</text><path d="M16 139h212" stroke="#51495f"/><text x="16" y="166" fill="#83d5ce" font-family="Consolas, monospace" font-size="12">3 replacements · review required</text></g>
+    </g>
+    <text x="1200" y="548" text-anchor="middle" fill="#b8afc4" font-family="Consolas, monospace" font-size="14" letter-spacing="1.5">DESIGNED FOR DETERMINISTIC, DEVICE-LOCAL REDACTION</text>
+  </g>
+</svg>

@@ -1,0 +1,43 @@
+name: Bug report
+description: Report incorrect behavior. Security issues go through SECURITY.md instead.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Never paste real secrets, real logs, or personal data here.** Use a synthetic reproduction.
+        If a supported secret format was NOT redacted, report it privately (see SECURITY.md).
+  - type: input
+    id: version
+    attributes:
+      label: Version line
+      description: Output of `spymonk-redact --version` (includes the rule-set hash), or the site footer.
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating system and browser (if applicable)
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Synthetic reproduction
+      description: Minimal synthetic input, the options you used, and the exact command.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected versus actual output
+    validations:
+      required: true
+  - type: checkboxes
+    id: synthetic
+    attributes:
+      label: Confirmation
+      options:
+        - label: My report contains no real credentials, logs, or personal data.
+          required: true

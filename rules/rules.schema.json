@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/shubhajeet1207/redact/rules/rules.schema.json",
+  "title": "SpyMonk Redact rule manifest",
+  "description": "Structural schema for rules/rules.v1.json. The build-time compiler (crates/rules) enforces this and stricter semantic checks.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "ruleVersion", "placeholders", "precedence", "rules"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "ruleVersion": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$" },
+    "placeholders": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^\\[[A-Z ]+\\]$" }
+    },
+    "precedence": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/ruleId" }
+    },
+    "rules": {
+      "type": "array",
+      "minItems": 9,
+      "maxItems": 9,
+      "items": { "$ref": "#/$defs/rule" }
+    }
+  },
+  "$defs": {
+    "ruleId": { "type": "string", "pattern": "^SR-[0-9]{3}$" },
+    "alias": { "type": "string", "pattern": "^[a-z0-9]+$" },
+    "header": { "type": "string", "pattern": "^[a-z-]+$" },
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "detector", "defaultEnabled", "optional", "placeholder", "description", "examples", "nonExamples", "limitations", "data"],
+      "properties": {
+        "id": { "$ref": "#/$defs/ruleId" },
+        "name": { "type": "string", "minLength": 1 },
+        "detector": {
+          "enum": ["named-value", "authorization", "url-credential", "home-path", "email", "private-ip", "token-format", "pem-block", "cookie"]
+        },
+        "defaultEnabled": { "type": "boolean" },
+        "optional": { "type": "boolean" },
+        "placeholder": { "type": "string" },
+        "description": { "type": "string", "minLength": 1 },
+        "examples": {
+          "type": "array",
+          "items": { "type": "array", "prefixItems": [{ "type": "string" }, { "type": "string" }], "minItems": 2, "maxItems": 2 }
+        },
+        "nonExamples": { "type": "array", "items": { "type": "string" } },
+        "limitations": { "type": "array", "items": { "type": "string" } },
+        "data": {
+          "type": "object",
+          "properties": {
+            "singleAliases": { "type": "array", "items": { "$ref": "#/$defs/alias" } },
+            "pairAliases": {
+              "type": "array",
+              "items": { "type": "array", "prefixItems": [{ "$ref": "#/$defs/alias" }, { "$ref": "#/$defs/alias" }], "minItems": 2, "maxItems": 2 }
+            },
+            "skipValues": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+            "headers": { "type": "array", "items": { "$ref": "#/$defs/header" } },
+            "schemes": { "type": "array", "items": { "type": "string", "pattern": "^[a-z0-9-]+$" } },
+            "requestHeaders": { "type": "array", "items": { "$ref": "#/$defs/header" } },
+            "responseHeaders": { "type": "array", "items": { "$ref": "#/$defs/header" } },
+            "posixPrefixes": { "type": "array", "items": { "type": "string", "pattern": "^/[A-Za-z0-9/]+/$" } },
+            "windowsDirectory": { "type": "string", "pattern": "^[a-z]+$" },
+            "ipv4": { "type": "array", "items": { "type": "string" } },
+            "ipv6": { "type": "array", "items": { "type": "string" } },
+            "labelSuffixes": { "type": "array", "items": { "type": "string", "pattern": "^[A-Z ]+$" } },
+            "maxLabelPrefix": { "type": "integer", "minimum": 0, "maximum": 64 },
+            "formats": { "type": "array", "items": { "$ref": "#/$defs/format" } }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "provider", "prefixes", "segments", "source"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "provider": { "type": "string", "minLength": 1 },
+        "prefixes": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "segments": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["charset", "min"],
+            "properties": {
+              "charset": { "enum": ["alnum", "alnum-upper", "alnum-us", "alnum-dash", "b64url", "b64url-dot"] },
+              "min": { "type": "integer", "minimum": 0, "maximum": 1024 },
+              "exact": { "type": "boolean" }
+            }
+          }
+        },
+        "source": { "type": "string", "pattern": "^https://" }
+      }
+    }
+  }
+}

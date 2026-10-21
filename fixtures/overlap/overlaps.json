@@ -1,0 +1,139 @@
+{
+  "fixtures": [
+    {
+      "id": "OV-01-sr001-sr007",
+      "input": "\"token\": \"ghp_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"",
+      "output": "\"token\": \"[REDACTED]\"",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "OV-02-sr002-sr007",
+      "input": "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0In0.c2ln",
+      "output": "Authorization: Bearer [REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "OV-03-sr003-sr005",
+      "input": "https://alex@example.com:pw@host/",
+      "output": "https://[EMAIL REDACTED]:[REDACTED]@host/",
+      "replacements": 2,
+      "byRule": {
+        "SR-003": 1,
+        "SR-005": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "OV-04-sr003-sr005-email-off",
+      "input": "https://alex@example.com:pw@host/",
+      "options": {
+        "email": false,
+        "privateIp": false
+      },
+      "output": "https://alex@example.com:[REDACTED]@host/",
+      "replacements": 1,
+      "byRule": {
+        "SR-003": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "OV-05-sr003-sr006",
+      "input": "mysql://u:p@10.0.0.5:3306/db",
+      "options": {
+        "email": true,
+        "privateIp": true
+      },
+      "output": "mysql://u:[REDACTED]@[PRIVATE IP REDACTED]:3306/db",
+      "replacements": 2,
+      "byRule": {
+        "SR-003": 1,
+        "SR-006": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "OV-06-sr001-sr003-union",
+      "input": "secret=postgres://u:p@db/x",
+      "output": "secret=[REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-001": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "OV-07-sr003-only",
+      "input": "DATABASE_URL=postgres://u:p@db/x",
+      "output": "DATABASE_URL=postgres://u:[REDACTED]@db/x",
+      "replacements": 1,
+      "byRule": {
+        "SR-003": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "OV-08-sr009-swallows-sr001",
+      "input": "Cookie: token=abc",
+      "output": "Cookie: token=[REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-009": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "OV-09-sr007-url-username",
+      "input": "https://ghp_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@github.com/o/r.git",
+      "output": "https://[REDACTED]@github.com/o/r.git",
+      "replacements": 1,
+      "byRule": {
+        "SR-007": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "OV-10-sr006-ipv4-in-ipv6",
+      "input": "fd00::10.0.0.1",
+      "options": {
+        "email": true,
+        "privateIp": true
+      },
+      "output": "[PRIVATE IP REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-006": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "OV-11-sr008-sr005-after-end",
+      "input": "-----BEGIN PRIVATE KEY-----\nAAAA\n-----END PRIVATE KEY-----\", \"client_email\": \"svc@example.com\"\n",
+      "output": "-----BEGIN PRIVATE KEY-----\n[PRIVATE KEY REDACTED]\n-----END PRIVATE KEY-----\", \"client_email\": \"[EMAIL REDACTED]\"\n",
+      "replacements": 2,
+      "byRule": {
+        "SR-008": 1,
+        "SR-005": 1
+      },
+      "lines": 3
+    },
+    {
+      "id": "OV-12-touching",
+      "input": "a=1 password=x,token=y",
+      "output": "a=1 password=[REDACTED],token=[REDACTED]",
+      "replacements": 2,
+      "byRule": {
+        "SR-001": 2
+      },
+      "lines": 1
+    }
+  ]
+}

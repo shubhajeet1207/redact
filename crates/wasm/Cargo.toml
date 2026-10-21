@@ -1,0 +1,29 @@
+[package]
+name = "spymonk-redact-wasm"
+description = "WebAssembly adapter of the SpyMonk Redact engine for the browser worker (TRD §10.5)."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+spymonk-redact-core = { path = "../core" }
+zeroize.workspace = true
+wasm-bindgen = { version = "=0.2.129", default-features = false, features = ["std"] }
+js-sys = "=0.3.106"
+
+# wasm-bindgen's generated glue contains `unsafe` blocks, so this crate cannot inherit the
+# workspace's `forbid(unsafe_code)`; hand-written code here still may not use `unsafe`.
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"
+
+[lints.clippy]
+dbg_macro = "deny"
+todo = "deny"
+unimplemented = "deny"

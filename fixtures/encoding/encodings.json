@@ -1,0 +1,190 @@
+{
+  "fixtures": [
+    {
+      "id": "ENC-01-utf8-bom",
+      "inputBase64": "77u/cGFzc3dvcmQ9eAo=",
+      "outputBase64": "77u/cGFzc3dvcmQ9W1JFREFDVEVEXQo=",
+      "replacements": 1,
+      "byRule": {
+        "SR-001": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "ENC-02-utf16be-bom",
+      "inputBase64": "/v8AdABvAGsAZQBuADoAIABhAGIAYwANAAo=",
+      "outputBase64": "/v8AdABvAGsAZQBuADoAIABbAFIARQBEAEEAQwBUAEUARABdAA0ACg==",
+      "replacements": 1,
+      "byRule": {
+        "SR-001": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "ENC-03-invalid-utf8",
+      "inputBase64": "b2sKYmFkIP8K",
+      "error": {
+        "code": "INVALID_UTF8",
+        "line": 2
+      },
+      "output": "ok\n",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "ENC-04-nul",
+      "inputBase64": "YWJjAA==",
+      "error": {
+        "code": "NUL_BYTE",
+        "line": 1
+      },
+      "output": "",
+      "replacements": 0,
+      "lines": 0
+    },
+    {
+      "id": "ENC-05-utf16-without-bom",
+      "inputBase64": "cABhAHMAcwB3AG8AcgBkAD0AZgBhAGsAZQAKAA==",
+      "error": {
+        "code": "UTF16_WITHOUT_BOM",
+        "line": 1
+      },
+      "output": "",
+      "replacements": 0,
+      "lines": 0
+    },
+    {
+      "id": "ENC-06-utf32-bom",
+      "inputBase64": "//4AAGEAAAA=",
+      "error": {
+        "code": "UNSUPPORTED_ENCODING",
+        "line": 1
+      },
+      "output": "",
+      "replacements": 0,
+      "lines": 0
+    },
+    {
+      "id": "ENC-07-mixed-line-endings",
+      "input": "password=a\r\ntoken: b\rc=1\npwd=x",
+      "output": "password=[REDACTED]\r\ntoken: [REDACTED]\rc=1\npwd=[REDACTED]",
+      "replacements": 3,
+      "byRule": {
+        "SR-001": 3
+      },
+      "lines": 4,
+      "hidden": {
+        "loneCr": 1
+      }
+    },
+    {
+      "id": "ENC-08-emoji-and-combining",
+      "input": "🙂 password=fäké 🙂",
+      "output": "🙂 password=[REDACTED] 🙂",
+      "replacements": 1,
+      "byRule": {
+        "SR-001": 1
+      },
+      "lines": 1
+    },
+    {
+      "id": "ENC-09-bidi-inside-value",
+      "input": "token=abc‮def",
+      "output": "token=[REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-001": 1
+      },
+      "lines": 1,
+      "hidden": {
+        "bidi": 0
+      }
+    },
+    {
+      "id": "ENC-10-bidi-kept-and-counted",
+      "input": "note ‮ password=x",
+      "output": "note ‮ password=[REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-001": 1
+      },
+      "lines": 1,
+      "hidden": {
+        "bidi": 1
+      }
+    },
+    {
+      "id": "ENC-11-no-final-newline",
+      "input": "a\npassword=x",
+      "output": "a\npassword=[REDACTED]",
+      "replacements": 1,
+      "byRule": {
+        "SR-001": 1
+      },
+      "lines": 2
+    },
+    {
+      "id": "ENC-12-empty",
+      "input": "",
+      "output": "",
+      "replacements": 0,
+      "lines": 0
+    },
+    {
+      "id": "ENC-13-line-too-long",
+      "input": "ok\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n",
+      "maxLineBytes": 1024,
+      "error": {
+        "code": "LINE_TOO_LONG",
+        "line": 2
+      },
+      "output": "ok\n",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "ENC-14-line-at-limit",
+      "input": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n",
+      "maxLineBytes": 1024,
+      "output": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n",
+      "replacements": 0,
+      "lines": 1
+    },
+    {
+      "id": "ENC-15-unterminated-pem",
+      "input": "-----BEGIN PRIVATE KEY-----\nAAAA\n",
+      "output": "-----BEGIN PRIVATE KEY-----\n[PRIVATE KEY REDACTED]\n",
+      "replacements": 1,
+      "byRule": {
+        "SR-008": 1
+      },
+      "lines": 2,
+      "warnings": [
+        "UNTERMINATED_PRIVATE_KEY_BLOCK"
+      ]
+    },
+    {
+      "id": "ENC-16-crlf-pem",
+      "input": "-----BEGIN EC PRIVATE KEY-----\r\nAAAA\r\nBBBB\r\n-----END EC PRIVATE KEY-----\r\n",
+      "output": "-----BEGIN EC PRIVATE KEY-----\r\n[PRIVATE KEY REDACTED]\r\n\r\n-----END EC PRIVATE KEY-----\r\n",
+      "replacements": 1,
+      "byRule": {
+        "SR-008": 1
+      },
+      "lines": 4
+    },
+    {
+      "id": "ENC-17-terminal-escape-counted",
+      "input": "\u001b[31mtoken=abc\u001b[0m",
+      "output": "\u001b[31mtoken=[REDACTED]\u001b[0m",
+      "replacements": 1,
+      "byRule": {
+        "SR-001": 1
+      },
+      "lines": 1,
+      "hidden": {
+        "control": 2
+      }
+    }
+  ]
+}
