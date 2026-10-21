@@ -25,6 +25,9 @@ allow = [
 [bans]
 multiple-versions = "warn"
 wildcards = "deny"
+# Path dependencies between this workspace's own crates carry no version; that is allowed only
+# because every crate is `publish = false`. Registry wildcards stay denied.
+allow-wildcard-paths = true
 # Networking, TLS, and process crates must never enter the dependency graph (TRD §9.8).
 deny = [
   { crate = "reqwest" },

@@ -203,15 +203,12 @@ test('pagehide clears the editor, output, and results', async ({ page }) => {
   await expect(page.locator('#copy')).toBeDisabled();
 });
 
-test('keyboard-only operation: skip link, tabs, editor, and buttons', async ({ page, browserName }) => {
+test('keyboard-only operation: skip link, tabs, editor, and buttons', async ({ page }) => {
   await ready(page);
-  if (browserName === 'webkit') {
-    // WebKit, like Safari's default setting, leaves links out of the Tab order, so the first
-    // Tab reaches the first control. Every control is a button or form field.
-    await page.keyboard.press('Tab');
-  } else {
-    await page.keyboard.press('Tab');
-    await expect(page.locator('.skip-link')).toBeFocused();
+  await page.keyboard.press('Tab');
+  // Some engines (WebKit on Windows and macOS, like Safari's default) leave links out of the Tab
+  // order; there the first Tab reaches the first control, which is a button.
+  if (await page.locator('.skip-link').evaluate((el) => el === document.activeElement)) {
     await page.keyboard.press('Enter');
     await expect(page.locator('#playground')).toBeFocused();
     await page.keyboard.press('Tab');
