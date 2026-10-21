@@ -56,6 +56,22 @@ jobs:
         run: rustup toolchain install
       - run: cargo test --workspace --locked
       - run: cargo test --workspace --locked --release
+      - name: Linux hardening (seccomp filter, not dumpable, no core dumps)
+        if: runner.os == 'Linux'
+        run: cargo test -p spymonk-redact --locked --features sandbox-probe --test platform
+      - name: Release binary imports no networking or process-creation APIs (TRD §9.8)
+        shell: bash
+        run: |
+          rustup component add llvm-tools
+          cargo build --locked --release -p spymonk-redact
+          bin=target/release/spymonk-redact
+          if [ -f "$bin.exe" ]; then bin="$bin.exe"; fi
+          tools/check-imports.sh "$bin"
+      - name: Zero network or process syscalls over the corpus (TRD §19.7)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install -y --no-install-recommends strace
+          tools/check-no-network.sh target/release/spymonk-redact
 
   web:
     # TRD §10, §19.7–§19.8: the browser playground is linted, unit-tested, built, verified
@@ -92,6 +108,41 @@ jobs:
         run: npx vite build && node scripts/verify-dist.mjs
       - run: npx playwright install --with-deps chromium firefox webkit
       - run: npm run e2e
+
+  package:
+    # TRD §9.9, §14.4: the wheel installs and runs both entry points with exit codes passed
+    # through, the licence copy matches, and release archives are reproducible.
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: step-security/harden-runner@dc2769abcc0fcfbadfc1df54081c1608579ef6b2 # v2.22.2
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install pinned toolchain
+        run: rustup toolchain install
+      - name: Wheel and launcher smoke test
+        run: |
+          cmp LICENSE python/LICENSE
+          python3 -m venv /tmp/build
+          /tmp/build/bin/pip install --require-hashes -r python/build-requirements.txt
+          (cd python && /tmp/build/bin/maturin build --release --locked --out ../wheels)
+          python3 -m venv /tmp/run
+          /tmp/run/bin/pip install wheels/*.whl
+          test "$(echo 'password=x' | /tmp/run/bin/spymonk-redact 2>/dev/null)" = 'password=[REDACTED]'
+          test "$(echo 'token=x' | /tmp/run/bin/python -m spymonk_redact 2>/dev/null)" = 'token=[REDACTED]'
+          status=0; /tmp/run/bin/python -m spymonk_redact --max-line-bytes 5 2>/dev/null || status=$?
+          test "$status" -eq 2
+      - name: Archives are reproducible
+        run: |
+          export SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)"
+          bin="$(ls /tmp/run/bin/spymonk-redact)"
+          a="$(python3 -I tools/package-archive.py binary /tmp/a.tar.gz "$bin" LICENSE | cut -d' ' -f2)"
+          b="$(python3 -I tools/package-archive.py binary /tmp/b.tar.gz "$bin" LICENSE | cut -d' ' -f2)"
+          test "$a" = "$b"
 
   supply-chain:
     runs-on: ubuntu-latest

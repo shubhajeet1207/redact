@@ -3,6 +3,11 @@
 /rules/                 @shubhajeet1207
 /crates/core/           @shubhajeet1207
 /crates/wasm/           @shubhajeet1207
+/crates/cli/            @shubhajeet1207
+/python/                @shubhajeet1207
+/tools/                 @shubhajeet1207
+/packaging/             @shubhajeet1207
+/docs/compliance/       @shubhajeet1207
 /web/hosting/           @shubhajeet1207
 /web/.npmrc             @shubhajeet1207
 /web/package-lock.json  @shubhajeet1207

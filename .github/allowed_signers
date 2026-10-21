@@ -1,0 +1,6 @@
+# Maintainer SSH signing keys for release tags (TRD §14.1). The release workflow refuses to run
+# until this file lists at least one key. Format (one per line, see ssh-keygen(1) ALLOWED SIGNERS):
+#
+#   shubha.pradhan12@gmail.com namespaces="git" ssh-ed25519 AAAA...
+#
+# Sign a tag with:  git -c gpg.format=ssh -c user.signingkey=~/.ssh/id_ed25519.pub tag -s v0.1.0 -m v0.1.0

@@ -1,0 +1,41 @@
+[build-system]
+requires = ["maturin==1.15.0"]
+build-backend = "maturin"
+
+[project]
+name = "spymonk-redact"
+description = "Redact secrets and personal identifiers from logs and text before you share them. Local, streaming, byte-exact."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+authors = [{ name = "Shubhajeet Pradhan" }]
+keywords = ["redaction", "secrets", "logs", "privacy", "security"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Operating System :: MacOS",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Rust",
+  "Topic :: Security",
+  "Topic :: Text Processing :: Filters",
+]
+dynamic = ["version"]
+
+[project.urls]
+Repository = "https://github.com/shubhajeet1207/redact"
+Documentation = "https://github.com/shubhajeet1207/redact/blob/main/docs/rules.md"
+Issues = "https://github.com/shubhajeet1207/redact/issues"
+Security = "https://github.com/shubhajeet1207/redact/blob/main/SECURITY.md"
+
+# TRD §9.9: the wheel carries the native binary as the `spymonk-redact` console command; the
+# Python package only adds `python -m spymonk_redact`.
+[tool.maturin]
+bindings = "bin"
+manifest-path = "../crates/cli/Cargo.toml"
+python-source = "."
+module-name = "spymonk_redact"
+locked = true
+strip = true

@@ -1,0 +1,161 @@
+name: Release
+
+# TRD §14.1, §14.4, §14.5, §21.1 (M5). Runs on a signed `v*` tag. It verifies the tag signature
+# against .github/allowed_signers, builds and attests every artifact through the reusable
+# workflow, rebuilds them independently and compares hashes, and only then offers publication.
+# Each publishing job runs in a protected environment (`release`, `pypi`, `ghcr`) whose required
+# reviewers the owner configures, and the GitHub release is created as a draft: publication is
+# always an explicit owner action.
+on:
+  push:
+    tags: ["v*"]
+
+permissions: {}
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify-tag:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: step-security/harden-runner@dc2769abcc0fcfbadfc1df54081c1608579ef6b2 # v2.22.2
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: The tag is signed by a maintainer key in .github/allowed_signers
+        run: |
+          if ! grep -qvE '^\s*(#|$)' .github/allowed_signers; then
+            echo "::error::.github/allowed_signers lists no maintainer keys; add one before releasing"
+            exit 1
+          fi
+          git fetch --force origin "refs/tags/$GITHUB_REF_NAME:refs/tags/$GITHUB_REF_NAME"
+          git -c gpg.format=ssh -c gpg.ssh.allowedSignersFile=.github/allowed_signers \
+            tag -v "$GITHUB_REF_NAME"
+      - name: The tag matches the workspace version
+        run: |
+          version="$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -1)"
+          test "v$version" = "$GITHUB_REF_NAME" || {
+            echo "::error::tag $GITHUB_REF_NAME does not match version $version"; exit 1; }
+
+  build:
+    needs: verify-tag
+    uses: ./.github/workflows/build-reusable.yml
+    with:
+      attest: true
+      prefix: release
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+
+  rebuild:
+    needs: verify-tag
+    uses: ./.github/workflows/build-reusable.yml
+    with:
+      attest: false
+      prefix: rebuild
+    permissions:
+      contents: read
+
+  compare:
+    # TRD §14.4 rebuild gate: every artifact must match byte for byte.
+    needs: [build, rebuild]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-sums
+          path: release
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: rebuild-sums
+          path: rebuild
+      - name: Compare SHA256SUMS
+        run: |
+          if ! diff -u release/SHA256SUMS rebuild/SHA256SUMS; then
+            echo "::error::rebuilt artifacts differ; list any accepted exceptions in the release notes"
+            exit 1
+          fi
+
+  github-release:
+    needs: compare
+    runs-on: ubuntu-24.04
+    environment: release
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: release-*
+          path: dist
+          merge-multiple: true
+      - name: Create a draft release (the owner publishes it)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --draft --verify-tag \
+            --title "$GITHUB_REF_NAME" --notes "See CHANGELOG.md. Verify with docs/installation/README.md." \
+            dist/*.tar.gz dist/*.zip dist/*.whl dist/SHA256SUMS dist/sbom/*
+
+  pypi:
+    needs: compare
+    runs-on: ubuntu-24.04
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: release-*
+          path: dist
+          merge-multiple: true
+      - name: Keep only wheels and the sdist
+        run: find dist -type f ! -name '*.whl' ! -name 'spymonk_redact-*.tar.gz' -delete
+      # Trusted Publishing (OIDC): no API token; PEP 740 attestations are created automatically.
+      - uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
+        with:
+          packages-dir: dist
+
+  ghcr:
+    needs: compare
+    runs-on: ubuntu-24.04
+    environment: ghcr
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-image
+          path: dist
+      - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+      - name: Push the attested image and sign it (keyless)
+        id: push
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          image="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/spymonk-redact"
+          version="${GITHUB_REF_NAME#v}"
+          echo "$GH_TOKEN" | skopeo login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          skopeo copy --all "oci-archive:dist/spymonk-redact-image-$version.oci.tar" "docker://$image:$version"
+          digest="$(skopeo inspect --raw "docker://$image:$version" | sha256sum | cut -d' ' -f1)"
+          echo "name=$image" >> "$GITHUB_OUTPUT"
+          echo "digest=sha256:$digest" >> "$GITHUB_OUTPUT"
+          echo "$GH_TOKEN" | cosign login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          cosign sign --yes "$image@sha256:$digest"
+      - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-name: ${{ steps.push.outputs.name }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
