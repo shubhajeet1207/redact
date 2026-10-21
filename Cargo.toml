@@ -16,7 +16,7 @@ aho-corasick = { version = "1.1", default-features = false }
 serde_json = "1"
 sha2 = "0.10"
 proptest = "1"
-base64 = "0.22"
+base64 = "0.23"
 zeroize = { version = "=1.9.1", default-features = false, features = ["alloc"] }
 
 [workspace.lints.rust]
