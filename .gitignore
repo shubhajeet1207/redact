@@ -12,3 +12,4 @@ Thumbs.db
 /web/wasm-pkg/
 /web/test-results/
 /web/playwright-report/
+/mutants.out/

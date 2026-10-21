@@ -108,6 +108,12 @@ jobs:
         run: npx vite build && node scripts/verify-dist.mjs
       - run: npx playwright install --with-deps chromium firefox webkit
       - run: npm run e2e
+      - name: The site verifier accepts the built bundle under the production headers
+        run: |
+          python3 -I ../tools/package-archive.py web /tmp/site.tar.gz dist
+          node scripts/serve.mjs 4180 &
+          for i in $(seq 1 30); do curl -fs http://127.0.0.1:4180/ >/dev/null && break; sleep 1; done
+          python3 -I ../tools/verify-site http://127.0.0.1:4180/ --bundle /tmp/site.tar.gz --headers hosting/headers.json
 
   package:
     # TRD §9.9, §14.4: the wheel installs and runs both entry points with exit codes passed
@@ -140,9 +146,11 @@ jobs:
         run: |
           export SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)"
           bin="$(ls /tmp/run/bin/spymonk-redact)"
-          a="$(python3 -I tools/package-archive.py binary /tmp/a.tar.gz "$bin" LICENSE | cut -d' ' -f2)"
-          b="$(python3 -I tools/package-archive.py binary /tmp/b.tar.gz "$bin" LICENSE | cut -d' ' -f2)"
-          test "$a" = "$b"
+          # Same archive name (it sets the top-level directory), built twice in separate places.
+          mkdir -p /tmp/one /tmp/two
+          a="$(python3 -I tools/package-archive.py binary /tmp/one/spymonk-redact.tar.gz "$bin" LICENSE | cut -d' ' -f2)"
+          b="$(python3 -I tools/package-archive.py binary /tmp/two/spymonk-redact.tar.gz "$bin" LICENSE | cut -d' ' -f2)"
+          test -n "$a" && test "$a" = "$b"
 
   supply-chain:
     runs-on: ubuntu-latest
@@ -161,6 +169,10 @@ jobs:
         with:
           tool: cargo-deny
       - run: cargo deny --locked check
+      - name: Every dependency is audited or explicitly exempted (cargo-vet, TRD §14.3)
+        run: |
+          cargo install cargo-vet --version 0.10.2 --locked
+          cargo vet --locked
 
   dco:
     if: github.event_name == 'pull_request'
