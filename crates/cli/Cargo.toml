@@ -1,0 +1,63 @@
+[package]
+name = "spymonk-redact"
+description = "Redact secrets and personal identifiers from logs and text before sharing them. Local, streaming, byte-exact."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "spymonk-redact"
+path = "src/main.rs"
+
+[features]
+# Adds the hidden `--probe-sandbox` flag that the Linux hardening test uses to show the seccomp
+# filter's effect (TRD §19.6). Release builds never enable it.
+sandbox-probe = []
+
+[dependencies]
+spymonk-redact-core = { path = "../core" }
+lexopt = "0.3.2"
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2.190"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+seccompiler = { version = "0.5.0", default-features = false }
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.61.2", features = [
+  "Win32_Foundation",
+  "Win32_Security_Cryptography",
+  "Win32_Storage_FileSystem",
+  "Win32_System_Console",
+  "Win32_System_Diagnostics_Debug",
+  "Win32_System_SystemServices",
+  "Win32_System_Threading",
+] }
+
+[build-dependencies]
+spymonk-redact-rules = { path = "../rules" }
+
+[dev-dependencies]
+serde_json.workspace = true
+proptest.workspace = true
+base64.workspace = true
+spymonk-redact-wasm = { path = "../wasm" }
+
+[target.'cfg(unix)'.dev-dependencies]
+libc = "0.2.190"
+
+# Platform calls (process hardening, signal handling, file identity on Windows, the OS random
+# source) need `unsafe`. It is denied crate-wide and allowed only in those modules, where every
+# block carries a safety comment.
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"
+
+[lints.clippy]
+dbg_macro = "deny"
+todo = "deny"
+unimplemented = "deny"

@@ -261,10 +261,16 @@ dependencies = [
 ]
 
 [[package]]
-name = "libc"
-version = "0.2.191"
+name = "lexopt"
+version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "65cd87c9a6d60536580b316ad985726104730a5151c99845f2490428ef91240a"
+checksum = "803ec87c9cfb29b9d2633f20cba1f488db3fd53f2158b1024cbefb47ba05d413"
+
+[[package]]
+name = "libc"
+version = "0.2.190"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ce5d3ddc6d3fa000eb1536d85e147bfe31aacaba692ed6a876f95cb7c855be78"
 
 [[package]]
 name = "linux-raw-sys"
@@ -421,6 +427,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "seccompiler"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a4ae55de56877481d112a559bbc12667635fdaf5e005712fd4e2b2fa50ffc884"
+dependencies = [
+ "libc",
+]
+
+[[package]]
 name = "serde"
 version = "1.0.229"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -479,6 +494,22 @@ name = "slab"
 version = "0.4.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0c790de23124f9ab44544d7ac05d60440adc586479ce501c1d6d7da3cd8c9cf5"
+
+[[package]]
+name = "spymonk-redact"
+version = "0.1.0"
+dependencies = [
+ "base64",
+ "lexopt",
+ "libc",
+ "proptest",
+ "seccompiler",
+ "serde_json",
+ "spymonk-redact-core",
+ "spymonk-redact-rules",
+ "spymonk-redact-wasm",
+ "windows-sys",
+]
 
 [[package]]
 name = "spymonk-redact-core"

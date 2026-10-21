@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/shubhajeet1207/redact/schemas/report.v1.schema.json",
+  "title": "SpyMonk Redact run report, version 1",
+  "description": "The JSON report of one spymonk-redact run (TRD §9.6). It never contains matched values, input content, file names, paths, hashes of content, or environment data.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "tool",
+    "rules",
+    "options",
+    "status",
+    "outputComplete",
+    "input",
+    "output",
+    "replacements",
+    "hidden",
+    "invalidUtf8Replaced",
+    "warnings",
+    "sandbox",
+    "error",
+    "notice"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "tool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version", "build", "target"],
+      "properties": {
+        "name": { "const": "spymonk-redact" },
+        "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+        "build": { "type": "string", "description": "Commit the binary was built from, or \"unknown\"." },
+        "target": { "type": "string", "description": "Rust target triple." }
+      }
+    },
+    "rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "sha256"],
+      "properties": {
+        "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "options": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["email", "privateIp", "maxLineBytes", "invalidUtf8", "inputEncoding"],
+      "properties": {
+        "email": { "type": "boolean" },
+        "privateIp": { "type": "boolean" },
+        "maxLineBytes": { "type": "integer", "minimum": 1024, "maximum": 67108864 },
+        "invalidUtf8": { "enum": ["error", "replace"] },
+        "inputEncoding": { "enum": ["auto", "utf-8", "utf-16le", "utf-16be"] }
+      }
+    },
+    "status": { "enum": ["complete", "failed"] },
+    "outputComplete": { "type": "boolean" },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["encoding", "bom", "bytes", "lines"],
+      "properties": {
+        "encoding": { "enum": ["utf-8", "utf-16le", "utf-16be", null] },
+        "bom": { "type": ["boolean", "null"] },
+        "bytes": { "type": "integer", "minimum": 0 },
+        "lines": { "type": ["integer", "null"], "minimum": 0 }
+      }
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bytes", "displayEscaped"],
+      "properties": {
+        "bytes": { "type": "integer", "minimum": 0 },
+        "displayEscaped": { "type": "boolean" }
+      }
+    },
+    "replacements": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["total", "byRule"],
+      "properties": {
+        "total": { "type": "integer", "minimum": 0 },
+        "byRule": {
+          "type": "object",
+          "propertyNames": { "pattern": "^SR-[0-9]{3}$" },
+          "additionalProperties": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "hidden": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["bidi", "invisible", "control", "loneCr"],
+      "properties": {
+        "bidi": { "type": "integer", "minimum": 0 },
+        "invisible": { "type": "integer", "minimum": 0 },
+        "control": { "type": "integer", "minimum": 0 },
+        "loneCr": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "invalidUtf8Replaced": { "type": ["integer", "null"], "minimum": 0 },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "line"],
+        "properties": {
+          "code": { "enum": ["UNTERMINATED_PRIVATE_KEY_BLOCK", "UNSTABLE_LINE_REDACTED"] },
+          "line": { "type": "integer", "minimum": 1 },
+          "lines": { "type": "integer", "minimum": 1 }
+        }
+      }
+    },
+    "sandbox": { "enum": ["seccomp", "process-mitigations", "none"] },
+    "error": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["code", "line"],
+      "properties": {
+        "code": {
+          "enum": [
+            "INVALID_UTF8",
+            "INVALID_UTF16",
+            "UTF16_WITHOUT_BOM",
+            "UNSUPPORTED_ENCODING",
+            "NUL_BYTE",
+            "LINE_TOO_LONG",
+            "INPUT_TOO_LARGE",
+            "INVALID_OPTIONS",
+            "INTERNAL_ERROR",
+            "INPUT_READ_FAILED",
+            "OUTPUT_WRITE_FAILED",
+            "OUTPUT_IS_INPUT",
+            "OUTPUT_NOT_REGULAR",
+            "INTERRUPTED"
+          ]
+        },
+        "line": { "type": ["integer", "null"], "minimum": 1 }
+      }
+    },
+    "notice": {
+      "const": "Review output before sharing; detection is limited. Rotate any credential that was already exposed."
+    }
+  }
+}
