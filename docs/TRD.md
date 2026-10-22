@@ -15,7 +15,7 @@ The keywords MUST, MUST NOT, SHOULD, SHOULD NOT, and MAY are used as described i
 | Version | Date | Change |
 | --- | --- | --- |
 | 2.0 | 21 October 2026 | Fresh design replacing TRD v1.0. |
-| 2.2 | 22 October 2026 | M2 implementation rulings: own async-signal-safe handlers instead of `ctrlc`, so SIGINT and SIGTERM keep distinct exit codes (§9.4, §14.3); no environment reads at all, including `TERM` (§9.8); display escaping applies to standard output only (§9.5); report fields that need a summary are `null` after an early failure, `sandbox` adds `process-mitigations`, and the text report adds error and warning lines (§9.6); FIFOs are opened non-blocking so they can be rejected (§9.2); temporary names use `/dev/urandom` or `BCryptGenRandom` (§9.3); file opens are confined to `io.rs`, `atomic.rs`, and `osrand.rs` by review, because Clippy cannot scope a ban to modules (§9.8); the seccomp effect test uses the `sandbox-probe` feature (§19.6); packaging specifics (§9.9, §14.2). |
+| 2.2 | 22 October 2026 | M2 implementation rulings: own async-signal-safe handlers instead of `ctrlc`, so SIGINT and SIGTERM keep distinct exit codes (§9.4, §14.3); no environment reads at all, including `TERM` (§9.8); display escaping applies to standard output only (§9.5); report fields that need a summary are `null` after an early failure, `sandbox` adds `process-mitigations`, and the text report adds error and warning lines (§9.6); FIFOs are opened non-blocking so they can be rejected (§9.2); temporary names use `/dev/urandom` or `BCryptGenRandom` (§9.3); file opens are confined to `io.rs`, `atomic.rs`, and `osrand.rs` by review, because Clippy cannot scope a ban to modules (§9.8); the seccomp effect test uses the `sandbox-probe` feature (§19.6); packaging specifics (§9.9, §14.2); `pyproject.toml` sits at the workspace root, because maturin packages only files beneath it and the source distribution must carry the rule manifest (§9.9). |
 | 2.1 | 21 October 2026 | M3 implementation rulings: one Trusted Types policy that accepts only the hashed worker URL, because the `Worker` constructor is a Trusted Types sink (§10.6, §11.3); separate paste and file workers from the same script (§10.5); 1 MiB `File.slice()` reads (§10.4); static copy in `index.html`, runtime text in `strings.ts` (§10.1); the product mark is the favicon (§10.1); toolchain and npm settings (§4); `security.txt` `Canonical` once the domain exists (§11.3). M1 implementation rulings: UTF-16 detection without look-ahead (§5.2); SR-002 scheme list and fail-closed unknown schemes (§6.3); URL extent ends at backticks and controls (§6.4); private-key blocks own their byte ranges, and a removed body line after a lone CR keeps its placeholder (§6.9); headers that follow a cookie field are parsed on their own (§6.10); per-line fixed point that makes idempotence hold by construction, with a fail-closed cap (§7.1); P-2 stated as an identical separator sequence (§7.2); warning `UNSTABLE_LINE_REDACTED` (§5.1, §7.1). |
 
 ## Contents
@@ -150,6 +150,7 @@ Content never crosses boundary 1. Only code crosses it, inbound, at install time
 spymonk-redact/
   README.md  LICENSE  SECURITY.md  CONTRIBUTING.md  CODE_OF_CONDUCT.md  CHANGELOG.md
   CODEOWNERS  rust-toolchain.toml  Cargo.toml  Cargo.lock  deny.toml  clippy.toml
+  pyproject.toml                maturin, bindings = "bin"; at the root so the sdist carries rules/
   supply-chain/                 cargo-vet audits and imports
   rules/
     rules.v1.json               canonical rule manifest
@@ -171,7 +172,8 @@ spymonk-redact/
     wasm/                       spymonk-redact-wasm (cdylib)
   fuzz/                         cargo-fuzz targets
   python/
-    pyproject.toml              maturin, bindings = "bin"
+    README.md                   PyPI project description
+    build-requirements.txt      hash-pinned maturin
     spymonk_redact/__init__.py  __main__.py   launcher only
   web/
     package.json  package-lock.json  tsconfig.json  vite.config.ts  index.html
@@ -1323,7 +1325,7 @@ Every binary prints its rule-set hash with `--version`. The release notes list t
 
 **Tag ruleset:** only maintainers may create `v*` tags, and tags must be signed (§14.1).
 
-**CODEOWNERS** covers `/rules/`, `/crates/core/`, `/crates/cli/src/harden/`, `/.github/`, `/web/hosting/`, `/python/`, `/deny.toml`, `/supply-chain/`, and `/schemas/`.
+**CODEOWNERS** covers `/rules/`, `/crates/core/`, `/crates/cli/src/harden/`, `/.github/`, `/web/hosting/`, `/python/`, `/pyproject.toml`, `/deny.toml`, `/supply-chain/`, and `/schemas/`.
 
 **Repository security features:** secret scanning with push protection, Dependabot alerts, private vulnerability reporting, and CodeQL code scanning for Rust, JavaScript/TypeScript, and GitHub Actions.
 

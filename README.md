@@ -104,8 +104,8 @@ The test suites cover codecs, framing, detectors, fixtures, properties, adversar
 
 ```sh
 python -m pip install --require-hashes -r python/build-requirements.txt   # pinned maturin
-cd python && maturin build --release --locked --out ../wheels
-pip install ../wheels/*.whl     # provides spymonk-redact and python -m spymonk_redact
+maturin build --release --locked --out wheels
+pip install wheels/*.whl        # provides spymonk-redact and python -m spymonk_redact
 ```
 
 ### Browser playground

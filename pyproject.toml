@@ -5,7 +5,7 @@ build-backend = "maturin"
 [project]
 name = "spymonk-redact"
 description = "Redact secrets and personal identifiers from logs and text before you share them. Local, streaming, byte-exact."
-readme = "README.md"
+readme = "python/README.md"
 requires-python = ">=3.11"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
@@ -31,11 +31,14 @@ Issues = "https://github.com/shubhajeet1207/redact/issues"
 Security = "https://github.com/shubhajeet1207/redact/blob/main/SECURITY.md"
 
 # TRD §9.9: the wheel carries the native binary as the `spymonk-redact` console command; the
-# Python package only adds `python -m spymonk_redact`.
+# Python package only adds `python -m spymonk_redact`. This file sits at the workspace root
+# because maturin includes only files under it: the source distribution must carry the rule
+# manifest, which the engine's build scripts compile.
 [tool.maturin]
 bindings = "bin"
-manifest-path = "../crates/cli/Cargo.toml"
-python-source = "."
+manifest-path = "crates/cli/Cargo.toml"
+python-source = "python"
 module-name = "spymonk_redact"
 locked = true
 strip = true
+include = [{ path = "rules/rules.v1.json", format = "sdist" }]

@@ -5,6 +5,7 @@
 /crates/wasm/           @shubhajeet1207
 /crates/cli/            @shubhajeet1207
 /python/                @shubhajeet1207
+/pyproject.toml         @shubhajeet1207
 /tools/                 @shubhajeet1207
 /packaging/             @shubhajeet1207
 /docs/compliance/       @shubhajeet1207

@@ -16,7 +16,7 @@ All notable changes to this project are documented here. The project follows [Se
 - `spymonk-redact-wasm`: WebAssembly adapter that zeroes input and output buffers after each job and caps linear memory at 512 MiB.
 - The engine zeroes its line buffers when a sanitizer is dropped.
 - `spymonk-redact` command-line tool (TRD §9): streaming input, atomic `--output` and `--report-file`, same-file and symbolic-link refusal, terminal escaping of hidden and control characters, text and JSON reports (`schemas/report.v1.schema.json`), `--list-rules`, `--version`, fixed error codes, exit codes 0/1/2/130/141/143, and process hardening (no core dumps, Linux seccomp filter, Windows mitigation policies).
-- Python wheel (`python/`, maturin `bindings = "bin"`) with a `python -m spymonk_redact` launcher, and hash-pinned build requirements.
+- Python wheel and source distribution (maturin `bindings = "bin"`, `pyproject.toml` at the root) with a `python -m spymonk_redact` launcher in `python/`, and hash-pinned build requirements.
 - Release engineering: reproducible archives (`tools/package-archive.py`), import and network-absence checks (`tools/check-imports.sh`, `tools/check-no-network.sh`), a `FROM scratch` container definition, and workflows for building, attesting, rebuilding, and publishing (`build-reusable.yml`, `release.yml`), plus Scorecard and CodeQL.
 - Evidence register, compliance self-assessments, threat-model re-review, privacy notice, and release runbook (`docs/compliance`, `docs/privacy.md`, `docs/release.md`).
 

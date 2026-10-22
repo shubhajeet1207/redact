@@ -117,7 +117,7 @@ jobs:
 
   package:
     # TRD §9.9, §14.4: the wheel installs and runs both entry points with exit codes passed
-    # through, the licence copy matches, and release archives are reproducible.
+    # through, the source distribution builds on its own, and release archives are reproducible.
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -132,16 +132,25 @@ jobs:
         run: rustup toolchain install
       - name: Wheel and launcher smoke test
         run: |
-          cmp LICENSE python/LICENSE
           python3 -m venv /tmp/build
           /tmp/build/bin/pip install --require-hashes -r python/build-requirements.txt
-          (cd python && /tmp/build/bin/maturin build --release --locked --out ../wheels)
+          /tmp/build/bin/maturin build --release --locked --out wheels
           python3 -m venv /tmp/run
           /tmp/run/bin/pip install wheels/*.whl
           test "$(echo 'password=x' | /tmp/run/bin/spymonk-redact 2>/dev/null)" = 'password=[REDACTED]'
           test "$(echo 'token=x' | /tmp/run/bin/python -m spymonk_redact 2>/dev/null)" = 'token=[REDACTED]'
           status=0; /tmp/run/bin/python -m spymonk_redact --max-line-bytes 5 2>/dev/null || status=$?
           test "$status" -eq 2
+      - name: The source distribution builds a wheel outside the repository
+        run: |
+          /tmp/build/bin/maturin sdist --out /tmp/sdist
+          mkdir /tmp/from-sdist
+          tar -xzf /tmp/sdist/spymonk_redact-*.tar.gz -C /tmp/from-sdist
+          # A user building from source brings their own Rust; the sdist does not pin one.
+          export RUSTUP_TOOLCHAIN="$(sed -n 's/^channel = "\(.*\)"/\1/p' rust-toolchain.toml)"
+          cd /tmp/from-sdist/spymonk_redact-*/
+          /tmp/build/bin/maturin build --release --locked --out /tmp/from-sdist/wheel
+          ls /tmp/from-sdist/wheel/spymonk_redact-*.whl
       - name: Archives are reproducible
         run: |
           export SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)"
