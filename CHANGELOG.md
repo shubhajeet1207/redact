@@ -4,6 +4,8 @@ All notable changes to this project are documented here. The project follows [Se
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-10-22
+
 ### Added
 
 - Rule set 1.0.0 (`rules/rules.v1.json`): SR-001 named secret values, SR-002 authorization credentials, SR-003 URL credentials, SR-004 home-directory usernames, SR-005 email addresses (default on), SR-006 private IP addresses (default off), SR-007 known credential formats, SR-008 private-key blocks, SR-009 cookie values.

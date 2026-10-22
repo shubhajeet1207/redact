@@ -3,4 +3,6 @@
 #
 #   shubha.pradhan12@gmail.com namespaces="git" ssh-ed25519 AAAA...
 #
-# Sign a tag with:  git -c gpg.format=ssh -c user.signingkey=~/.ssh/id_ed25519.pub tag -s v0.1.0 -m v0.1.0
+# Sign a tag with:  git -c gpg.format=ssh -c user.signingkey=<path to the .pub key> tag -s v0.1.0 -m v0.1.0
+# (or set gpg.format and user.signingkey once in your global git config, then: git tag -s v0.1.0 -m v0.1.0)
+shubha.pradhan12@gmail.com namespaces="git" ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIA8491YL2iVZtc6xvDgv6ovR6sTjRGdlekvYipjCe15J redact release signing
