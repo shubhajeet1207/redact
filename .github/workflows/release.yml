@@ -121,7 +121,7 @@ jobs:
       - name: Keep only wheels and the sdist
         run: find dist -type f ! -name '*.whl' ! -name 'spymonk_redact-*.tar.gz' -delete
       # Trusted Publishing (OIDC): no API token; PEP 740 attestations are created automatically.
-      - uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
+      - uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
         with:
           packages-dir: dist
 
