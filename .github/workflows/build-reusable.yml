@@ -61,8 +61,9 @@ jobs:
         run: sudo apt-get install -y --no-install-recommends musl-tools
       - name: Build (TRD §14.4 reproducibility inputs)
         run: |
-          export SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)"
-          export SOURCE_COMMIT="$(git rev-parse HEAD)"
+          SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)"
+          SOURCE_COMMIT="$(git rev-parse HEAD)"
+          export SOURCE_DATE_EPOCH SOURCE_COMMIT
           export RUSTFLAGS="--remap-path-prefix=$PWD=/build --remap-path-prefix=$HOME=/home"
           cargo build --locked --release -p spymonk-redact --target "${{ matrix.target }}"
           # Static binaries carry no import table, so check an unstripped twin of the same code.
@@ -74,7 +75,8 @@ jobs:
           tools/check-imports.sh "target/import-check/${{ matrix.target }}/release/spymonk-redact$exe"
       - name: Package
         run: |
-          export SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)"
+          SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)"
+          export SOURCE_DATE_EPOCH
           version="$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -1)"
           exe=""; case "${{ matrix.target }}" in *windows*) exe=".exe" ;; esac
           mkdir -p dist
@@ -170,8 +172,9 @@ jobs:
           node-version-file: web/.nvmrc
       - name: Build and package the site bundle
         run: |
-          export SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)"
-          export SOURCE_COMMIT="$(git rev-parse HEAD)"
+          SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)"
+          SOURCE_COMMIT="$(git rev-parse HEAD)"
+          export SOURCE_DATE_EPOCH SOURCE_COMMIT
           export RUSTFLAGS="--remap-path-prefix=$PWD=/build --remap-path-prefix=$HOME=/home"
           version="$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -1)"
           (cd web && npm ci && npm audit signatures && npm run build)
@@ -203,7 +206,8 @@ jobs:
           merge-multiple: true
       - name: Build the OCI image (linux/amd64, linux/arm64)
         run: |
-          export SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)"
+          SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)"
+          export SOURCE_DATE_EPOCH
           version="$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -1)"
           mkdir -p context/linux-amd64 context/linux-arm64 dist
           tar -xzf "musl/spymonk-redact-$version-x86_64-unknown-linux-musl.tar.gz" --strip-components=1 -C context/linux-amd64
@@ -286,7 +290,10 @@ jobs:
             dist/*.oci.tar
             dist/SHA256SUMS
       - id: version
-        run: echo "value=$(ls dist/sbom | sed -n 's/^spymonk-redact-web-//p' | sed 's/[.]cdx[.]json$//')" >> "$GITHUB_OUTPUT"
+        run: |
+          # dist/sbom holds only file names this workflow wrote, so parsing ls is safe here.
+          # shellcheck disable=SC2012
+          echo "value=$(ls dist/sbom | sed -n 's/^spymonk-redact-web-//p' | sed 's/[.]cdx[.]json$//')" >> "$GITHUB_OUTPUT"
       - name: Attest the CLI SBOM to the archives, wheels, and image
         uses: actions/attest-sbom@c604332985a26aa8cf1bdc465b92731239ec6b9e # v4.1.0
         with:
