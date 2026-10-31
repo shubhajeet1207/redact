@@ -112,7 +112,7 @@ jobs:
         run: |
           python3 -I ../tools/package-archive.py web /tmp/site.tar.gz dist
           node scripts/serve.mjs 4180 &
-          for i in $(seq 1 30); do curl -fs http://127.0.0.1:4180/ >/dev/null && break; sleep 1; done
+          for _ in $(seq 1 30); do curl -fs http://127.0.0.1:4180/ >/dev/null && break; sleep 1; done
           python3 -I ../tools/verify-site http://127.0.0.1:4180/ --bundle /tmp/site.tar.gz --headers hosting/headers.json
 
   package:
@@ -147,13 +147,15 @@ jobs:
           mkdir /tmp/from-sdist
           tar -xzf /tmp/sdist/spymonk_redact-*.tar.gz -C /tmp/from-sdist
           # A user building from source brings their own Rust; the sdist does not pin one.
-          export RUSTUP_TOOLCHAIN="$(sed -n 's/^channel = "\(.*\)"/\1/p' rust-toolchain.toml)"
+          RUSTUP_TOOLCHAIN="$(sed -n 's/^channel = "\(.*\)"/\1/p' rust-toolchain.toml)"
+          export RUSTUP_TOOLCHAIN
           cd /tmp/from-sdist/spymonk_redact-*/
           /tmp/build/bin/maturin build --release --locked --out /tmp/from-sdist/wheel
           ls /tmp/from-sdist/wheel/spymonk_redact-*.whl
       - name: Archives are reproducible
         run: |
-          export SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)"
+          SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)"
+          export SOURCE_DATE_EPOCH
           bin="$(ls /tmp/run/bin/spymonk-redact)"
           # Same archive name (it sets the top-level directory), built twice in separate places.
           mkdir -p /tmp/one /tmp/two
