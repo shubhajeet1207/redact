@@ -28,6 +28,11 @@ updates:
     cooldown:
       default-days: 7
     open-pull-requests-limit: 5
+    ignore:
+      # Playwright 1.64 bundles WebKit 27.2, which reports a style-src-attr CSP violation for every
+      # <select> (WebKit bug 327212) and fails the e2e CSP checks. Wait for the next minor release.
+      - dependency-name: "@playwright/test"
+        versions: ["1.64.x"]
   - package-ecosystem: pip
     directory: /python
     schedule:
