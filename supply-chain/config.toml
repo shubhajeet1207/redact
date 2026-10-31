@@ -58,16 +58,8 @@ criteria = "safe-to-run"
 version = "1.0.5"
 criteria = "safe-to-deploy"
 
-[[exemptions.chacha20]]
-version = "0.10.2"
-criteria = "safe-to-run"
-
 [[exemptions.const-oid]]
 version = "0.10.2"
-criteria = "safe-to-deploy"
-
-[[exemptions.cpufeatures]]
-version = "0.3.1"
 criteria = "safe-to-deploy"
 
 [[exemptions.crypto-common]]
@@ -93,10 +85,6 @@ criteria = "safe-to-deploy"
 [[exemptions.futures-util]]
 version = "0.3.34"
 criteria = "safe-to-deploy"
-
-[[exemptions.getrandom]]
-version = "0.4.3"
-criteria = "safe-to-run"
 
 [[exemptions.hashbrown]]
 version = "0.17.1"
@@ -156,14 +144,6 @@ criteria = "safe-to-run"
 
 [[exemptions.r-efi]]
 version = "6.0.0"
-criteria = "safe-to-run"
-
-[[exemptions.rand]]
-version = "0.10.3"
-criteria = "safe-to-run"
-
-[[exemptions.rand_core]]
-version = "0.10.1"
 criteria = "safe-to-run"
 
 [[exemptions.rand_xorshift]]
@@ -261,10 +241,6 @@ criteria = "safe-to-deploy"
 [[exemptions.winnow]]
 version = "1.0.4"
 criteria = "safe-to-run"
-
-[[exemptions.zeroize]]
-version = "1.9.1"
-criteria = "safe-to-deploy"
 
 [[exemptions.zmij]]
 version = "1.0.23"
