@@ -140,7 +140,7 @@ export default defineConfig({
   worker: {
     format: 'es',
     plugins: () => [embedWasm()],
-    rollupOptions: {
+    rolldownOptions: {
       output: { entryFileNames: 'assets/worker-[hash].js' },
     },
   },
@@ -153,7 +153,7 @@ export default defineConfig({
     assetsInlineLimit: 0,
     modulePreload: { polyfill: false },
     sourcemap: false,
-    rollupOptions: {
+    rolldownOptions: {
       output: {
         entryFileNames: 'assets/app-[hash].js',
         chunkFileNames: 'assets/chunk-[hash].js',
