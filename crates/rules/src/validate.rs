@@ -393,8 +393,9 @@ fn parse_cidr4(s: &str) -> Option<(u32, u8)> {
     let addr: Ipv4Addr = addr.parse().ok()?;
     let len: u8 = len.parse().ok().filter(|l| *l <= 32)?;
     let net = u32::from(addr);
-    let host_mask = if len == 0 { u32::MAX } else { u32::MAX >> len };
-    (net & host_mask == 0 || len == 32).then_some((net, len))
+    // A /32 has no host bits; `u32::MAX >> 32` would overflow the shift.
+    let host_mask = u32::MAX.checked_shr(u32::from(len)).unwrap_or(0);
+    (net & host_mask == 0).then_some((net, len))
 }
 
 fn parse_cidr6(s: &str) -> Option<(u128, u8)> {
@@ -402,12 +403,9 @@ fn parse_cidr6(s: &str) -> Option<(u128, u8)> {
     let addr: Ipv6Addr = addr.parse().ok()?;
     let len: u8 = len.parse().ok().filter(|l| *l <= 128)?;
     let net = u128::from(addr);
-    let host_mask = if len == 0 {
-        u128::MAX
-    } else {
-        u128::MAX >> len
-    };
-    (net & host_mask == 0 || len == 128).then_some((net, len))
+    // A /128 has no host bits; `u128::MAX >> 128` would overflow the shift.
+    let host_mask = u128::MAX.checked_shr(u32::from(len)).unwrap_or(0);
+    (net & host_mask == 0).then_some((net, len))
 }
 
 fn is_semver(v: &str) -> bool {
