@@ -44,9 +44,12 @@ jobs:
           test "v$version" = "$GITHUB_REF_NAME" || {
             echo "::error::tag $GITHUB_REF_NAME does not match version $version"; exit 1; }
 
+  # zizmor suggests the newer `$/` self-repository syntax. For a reusable workflow, `./` already
+  # resolves to this repository at this commit, and this workflow runs only on release tags, so it
+  # keeps the documented form until a release has exercised the new one.
   build:
     needs: verify-tag
-    uses: ./.github/workflows/build-reusable.yml
+    uses: ./.github/workflows/build-reusable.yml # zizmor: ignore[self-repository]
     with:
       attest: true
       prefix: release
@@ -57,7 +60,7 @@ jobs:
 
   rebuild:
     needs: verify-tag
-    uses: ./.github/workflows/build-reusable.yml
+    uses: ./.github/workflows/build-reusable.yml # zizmor: ignore[self-repository]
     with:
       attest: false
       prefix: rebuild
