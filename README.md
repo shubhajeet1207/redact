@@ -128,7 +128,7 @@ Security and fuzz tooling is configured but must be installed separately. Fuzzin
 
 ```sh
 cargo install cargo-deny --locked
-cargo install cargo-fuzz --version 0.12.0 --locked
+cargo install cargo-fuzz --version 0.13.2 --locked
 ```
 
 ## Repository layout

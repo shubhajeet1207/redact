@@ -18,7 +18,7 @@ env:
   CARGO_TERM_COLOR: always
   # A dated nightly keeps fuzz builds reproducible; bump it deliberately.
   FUZZ_TOOLCHAIN: nightly-2026-10-01
-  CARGO_FUZZ_VERSION: 0.12.0
+  CARGO_FUZZ_VERSION: 0.13.2
 
 jobs:
   fuzz:
