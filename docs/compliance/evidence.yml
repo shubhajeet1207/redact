@@ -120,11 +120,11 @@ controls:
       - .github/workflows/mutants.yml (weekly, four shards; survivors published as a review list)
   - id: C-PIN
     control: Dependencies and actions pinned; 7-day cooldown
-    status: met
+    status: partial
     evidence:
       - Cargo.lock, fuzz/Cargo.lock, web/package-lock.json, python/build-requirements.txt (hashes)
       - every workflow action pinned by commit SHA
-      - .github/dependabot.yml cooldown default-days 7
+    gap: No update bot is configured (Dependabot was removed on 2026-11-28), so updates are manual and nothing enforces the 7-day cooldown; resolve npm updates with --before set 7 days back.
   - id: C-REVIEW
     control: Protected default branch, required checks, signed tags
     status: owner
