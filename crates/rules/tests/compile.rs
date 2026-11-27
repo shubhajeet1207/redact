@@ -187,6 +187,27 @@ fn rejects_bad_cidr() {
 }
 
 #[test]
+fn accepts_full_length_cidrs() {
+    // /32 and /128 have no host bits; computing their host mask must not overflow the shift.
+    let mut v = manifest_value();
+    rule_mut(&mut v, "SR-006")["data"]["ipv4"][2] = json!("192.168.0.1/32");
+    rule_mut(&mut v, "SR-006")["data"]["ipv6"][0] = json!("fd00::1/128");
+    compile_value(&v).unwrap();
+}
+
+#[test]
+fn rejects_cidr_with_host_bits() {
+    for (family, cidr) in [("ipv4", "10.0.0.1/8"), ("ipv6", "fc00::1/7")] {
+        let mut v = manifest_value();
+        rule_mut(&mut v, "SR-006")["data"][family][0] = json!(cidr);
+        assert!(
+            matches!(compile_value(&v), Err(ManifestError::InvalidCidr(c)) if c == cidr),
+            "{cidr}"
+        );
+    }
+}
+
+#[test]
 fn rejects_placeholder_not_reserved() {
     let mut v = manifest_value();
     rule_mut(&mut v, "SR-001")["placeholder"] = json!("[HIDDEN]");
