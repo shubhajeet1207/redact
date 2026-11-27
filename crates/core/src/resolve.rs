@@ -94,8 +94,9 @@ pub(crate) fn resolve_into(
     edits: &mut Vec<Edit>,
 ) {
     let len = line.len();
-    // Normalize: clamp to the line, widen to character boundaries (redacting more, never
-    // splitting a character), and drop empty ranges and targets that already are placeholders.
+    // Normalize: clamp to the line, widen to character and placeholder boundaries (redacting
+    // more, never splitting a character or a placeholder), and drop empty ranges and targets that
+    // already are placeholders.
     cands.retain_mut(|candidate| {
         let mut start = usize::try_from(candidate.start)
             .unwrap_or(usize::MAX)
@@ -108,6 +109,15 @@ pub(crate) fn resolve_into(
         }
         while end < len && !line.is_char_boundary(end) {
             end = end.saturating_add(1);
+        }
+        // A value scan that stops at `]` can end inside a placeholder, for example one from an
+        // earlier pass in `[REDACTED][REDACTED]`. Replacing `[REDACTED` would leave its `]`
+        // behind as text that was never in the input.
+        if let Some((s, _)) = placeholder_around(line.as_bytes(), start) {
+            start = s;
+        }
+        if let Some((_, e)) = placeholder_around(line.as_bytes(), end) {
+            end = e;
         }
         if start >= end
             || line
@@ -172,6 +182,18 @@ pub(crate) fn resolve_into(
         pos = usize::try_from(group_end).unwrap_or(len);
     }
     out.push_str(line.get(pos..).unwrap_or_default());
+}
+
+/// The range of the reserved placeholder in `b` that position `i` falls strictly inside, if any.
+/// Placeholders are bracketed and contain no other `[`, so two occurrences never overlap.
+fn placeholder_around(b: &[u8], i: usize) -> Option<(usize, usize)> {
+    rules::PLACEHOLDERS.iter().find_map(|p| {
+        let p = p.as_bytes();
+        (i.saturating_sub(p.len().saturating_sub(1))..i)
+            .find(|&q| b.get(q..).is_some_and(|rest| rest.starts_with(p)))
+            .map(|q| (q, q.saturating_add(p.len())))
+            .filter(|&(_, e)| e > i)
+    })
 }
 
 fn to_u64(n: usize) -> u64 {

@@ -36,3 +36,5 @@ cc c4d74371e5674388615f8eb230195a919b634573641abafab9974a40b48c0ed5 # shrinks to
 cc 22ed662d29f031463428eaae9ef8dba1027d5ee965ee58d65d0649fa0dc53223 # shrinks to input = "fd12:3456::1alex@example.compassword=", o = Options { email: true, private_ip: true }
 cc 1f9db885c8cc699d955a707d534abb4f7a2095199677a7d0c2db8ba912429de9 # shrinks to input = "Set-Cookie: s=\";\"api_key\": \"password=", o = Options { email: false, private_ip: false }
 cc e1d4539b6c04a107c96f6c470e22c1ce059c7e7983be4d6495d7a0062eab3434 # shrinks to input = "Authorization: Bearer Set-Cookie: s==; b=Cookie: a==", o = Options { email: false, private_ip: false }
+cc f6a8bcd1bd49d9cec3f7fcc5324901a36b98481703f8904b3d1d095cba5cd3a4 # shrinks to input = "Cookie: a=;https://Authorization: ***" (as masked in the CI log), o = Options { email: false, private_ip: false }
+cc 2e8e689c0046d6abeeff5e3aba1dd3083331ff3d153dfc1647a6cf4533848fc8 # shrinks to input = "Authorization: Bearer https://:,u:p@", o = Options { email: false, private_ip: false }

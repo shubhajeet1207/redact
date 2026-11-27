@@ -571,7 +571,7 @@ For each complete line, the engine runs these steps, carrying only the SR-008 st
 2. **Trigger scan.** One `aho-corasick` pass over the line locates every literal trigger: alias final segments, header names, `://`, `@`, credential prefixes, PEM armor, `/home/`, `/Users/`, and `:` followed by a separator and `Users`. A `memchr` pass locates digit runs for SR-006.
 3. **Structure.** Compute URL regions (SR-003 extents), which are needed to disambiguate SR-004 and SR-005.
 4. **Candidates.** Each enabled detector consumes its triggers left to right with a monotonic cursor and emits candidate ranges against the original line. Backward look-behind, such as finding a key's start, is bounded to 128 bytes. A detector never rescans bytes that its previous candidate consumed.
-5. **Placeholder exemption.** Discard any candidate whose complete target is exactly a reserved placeholder, or a run of reserved placeholders with nothing between them. A larger value that merely contains a placeholder is not exempt.
+5. **Placeholder exemption.** A candidate that starts or ends strictly inside a reserved placeholder is first widened to the placeholder's edge, as ranges are widened to whole characters, so a replacement never splits a placeholder. Then discard any candidate whose complete target is exactly a reserved placeholder, or a run of reserved placeholders with nothing between them. A larger value that merely contains a placeholder is not exempt.
 6. **Merge.** K-way merge the detectors' candidate streams by (start, end). Group strictly overlapping ranges; touching ranges stay separate.
 7. **Resolve and emit.** Emit each group as soon as it closes:
    - A single candidate gets its rule's placeholder.
