@@ -49,6 +49,9 @@ pub fn run(cfg: &RunConfig) -> u8 {
     let mut sandbox = "none";
 
     let result = (|| -> Result<Summary, Stop> {
+        // Before any temporary file exists: a signal that arrived with the default action still
+        // in place would end the process and leave the file behind.
+        signals::install();
         let (mut input, input_id) =
             input_io::open_input(cfg.input.as_deref()).map_err(Stop::Failed)?;
         let mut output = match &cfg.output {
@@ -58,7 +61,6 @@ pub fn run(cfg: &RunConfig) -> u8 {
         if let Some(path) = cfg.report.as_ref().and_then(|r| r.file.as_ref()) {
             report_pending = Some(atomic::prepare(path, input_id).map_err(Stop::Failed)?);
         }
-        signals::install();
         sandbox = harden::sandbox();
 
         let escape = output.is_none()
