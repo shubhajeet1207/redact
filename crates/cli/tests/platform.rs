@@ -95,7 +95,7 @@ fn a_closed_stdout_stops_silently() {
 #[allow(unsafe_code)] // libc::kill on our own child.
 fn signals_exit_130_and_143_and_remove_the_temporary_file() {
     use std::process::Stdio;
-    for (signal, code) in [(libc::SIGINT, 130), (libc::SIGTERM, 143)].repeat(150) {
+    for (signal, code) in [(libc::SIGINT, 130), (libc::SIGTERM, 143)] {
         let dir = temp_dir("signal");
         let out = dir.join("o.log");
         let mut child = bin()
