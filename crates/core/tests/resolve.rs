@@ -173,6 +173,22 @@ fn candidate_inside_multibyte_char_is_widened_never_split() {
 }
 
 #[test]
+fn candidate_inside_a_placeholder_is_widened_never_split() {
+    // Ending inside: `[REDACTED` widens to the whole placeholder, which is then exempt.
+    let line = "x [REDACTED][REDACTED]@";
+    let o = run(line, vec![cand(2, 11, IDX_NAMED_VALUE)], 0);
+    assert_eq!(o.text, line);
+    assert_eq!(o.inserted, 0);
+    // Starting inside: the range widens back to the placeholder's `[`.
+    let o = run("[EMAIL REDACTED]abc", vec![cand(6, 19, IDX_NAMED_VALUE)], 0);
+    assert_eq!(o.text, "[REDACTED]");
+    assert_eq!(o.inserted, 1);
+    // At a placeholder's edges nothing widens.
+    let o = run("[USER]abc", vec![cand(6, 9, IDX_NAMED_VALUE)], 0);
+    assert_eq!(o.text, "[USER][REDACTED]");
+}
+
+#[test]
 fn out_of_range_and_empty_candidates_are_safe() {
     let o = run(
         "abc",

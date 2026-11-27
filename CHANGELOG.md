@@ -4,6 +4,10 @@ All notable changes to this project are documented here. The project follows [Se
 
 ## [Unreleased]
 
+### Fixed
+
+- A replacement no longer splits a reserved placeholder (TRD §7.1 step 5). A value scan that stopped at `]` could end inside one, and the fixed-point pass then turned `[REDACTED][REDACTED]` into `[REDACTED]][REDACTED]`, leaving a `]` that was never in the input at that position. `Authorization: Bearer x[REDACTED]` now becomes `Authorization: Bearer [REDACTED]` rather than `[REDACTED]]`.
+
 ## [0.1.0] - 2026-10-22
 
 ### Added

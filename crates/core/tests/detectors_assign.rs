@@ -160,6 +160,36 @@ fn sr002_placeholder_does_not_hide_rest_of_line() {
 }
 
 #[test]
+fn placeholders_are_never_split() {
+    // The SR-001 and SR-002 value scans stop at `]`, so on these lines they end inside the first
+    // placeholder. Without widening, `[REDACTED` became `[REDACTED]` and left a stray `]`.
+    unchanged_all(
+        Options::default(),
+        &[
+            "Authorization: Bearer [REDACTED][REDACTED]",
+            "Authorization: [REDACTED][REDACTED]",
+            "password=[REDACTED][REDACTED]",
+            "password=[REDACTED][EMAIL REDACTED] x",
+        ],
+    );
+    // Touching candidates leave such a run after the first pass, and the fixed-point pass must
+    // not split it (found by the residue_equality property test).
+    check_all(
+        Options::default(),
+        &[
+            (
+                "Cookie:]Authorization:Bearer =,",
+                "Cookie:]Authorization:Bearer [REDACTED][REDACTED]",
+            ),
+            (
+                "Authorization: Bearer https://:,u:p@",
+                "Authorization: Bearer [REDACTED][REDACTED]@",
+            ),
+        ],
+    );
+}
+
+#[test]
 fn sr001_counts_each_occurrence() {
     attributed(
         "password=a password=a",
@@ -324,10 +354,11 @@ fn malformed_cookie_segment_is_conservatively_redacted() {
 
 #[test]
 fn authorization_credential_ends_at_bracket_and_stays_stable() {
-    // TRD §6.3: the credential token ends at `]`; the path after it keeps its own rule.
+    // TRD §6.3: the credential token ends at `]`; the path after it keeps its own rule. That `]`
+    // closes a placeholder, so the replacement widens to take it whole (TRD §7.1 step 5).
     let input = "Authorization: Bearer postgres://app:pw@db/x[REDACTED]/home/alex/";
     let once = redact(input);
-    assert_eq!(once, "Authorization: Bearer [REDACTED]]/home/[USER]/");
+    assert_eq!(once, "Authorization: Bearer [REDACTED]/home/[USER]/");
     assert_eq!(redact(&once), once);
 }
 
